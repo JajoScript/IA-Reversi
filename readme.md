@@ -49,3 +49,4 @@ Iniciar la ejecución:
 *  @Jajoscript
 *  @Vychon
 *  @Gonzal0-c
+*  @NickCracker
