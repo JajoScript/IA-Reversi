@@ -18,6 +18,13 @@ Generación de un entorno de desarrollo con python
    $py -m venv <name>
 ```
 
+### Verificación de archivos
+
+```bash
+   $mypy src/main.py
+```
+
+
 ---
 ## Ejecución y uso
 
