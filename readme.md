@@ -45,8 +45,36 @@ Iniciar la ejecución:
 ```
 
 ---
+## Funciones
+Apartado con el fin de entregar contexto a las funcionalidades de cada una de las implementaciones dentro del proyecto.
+
+
+```python
+()
+```
+*  Uso:
+*  Parametros:
+*  Retorna:
+
+```python
+def mostrarVentana() -> None:
+   """ ... """
+```
+*  Uso: Función utilizada para crear/renderizar la ventana del juego.
+*  Parametros: Ninguno.
+*  Retorna: Nada.
+
+```python
+def cargarAssets(nombre_archivo: str, transparencia: bool = False) -> typing.Any:
+""" ... """
+```
+*  Uso: Realiza la carga de una recurso (*jpg, jpeg, png, etc*) para ser utilizada dentro de la ventana del juego.
+*  Parametros: Es necesario el nombre del archivo junto con el parametro transparencia, parametro asignado para definir si debe o no ser transparente el fondo de la imagen (casos para recursos **.png**).
+*  Retorna: Nada.
+
+---
 ## Colaboradores
-*  @Jajoscript
-*  @Vychon
-*  @Gonzal0-c
-*  @NickCracker
+*  Javier Almarza, **AKA** @Jajoscript
+*  Vicente Salas, **AKA** @Vychon
+*  Gonzalo Cañas, **AKA** @Gonzal0-c
+*  Nicolas Cruz, **AKA** @NickCracker

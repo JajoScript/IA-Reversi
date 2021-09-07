@@ -23,6 +23,12 @@ def cargarAssets(nombre_archivo: str, transparencia: bool = False) -> typing.Any
    return imagen
 
 def mostrarVentana() -> None:
+   """ MostrarVetana()
+      Función : Función utilizada para crear/renderizar la ventana del juego.
+      Parametros: Ninguno.
+      Retorna : Nada.
+   """
+
    # Creación de la ventana del juego.
    ventana = pygame.display.set_mode((alto, ancho));
 
