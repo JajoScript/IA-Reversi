@@ -45,12 +45,19 @@ Iniciar la ejecución:
 ```
 
 ---
-## Funciones
+## Funcionalidad
 Apartado con el fin de entregar contexto a las funcionalidades de cada una de las implementaciones dentro del proyecto.
 
-
+### Objetos
 ```python
-()
+class test():
+   """ ... """
+```
+
+### Funciones
+```python
+def test() -> None:
+   """ ... """
 ```
 *  Uso:
 *  Parametros:
@@ -77,4 +84,4 @@ def cargarAssets(nombre_archivo: str, transparencia: bool = False) -> typing.Any
 *  Javier Almarza, **AKA** @Jajoscript
 *  Vicente Salas, **AKA** @Vychon
 *  Gonzalo Cañas, **AKA** @Gonzal0-c
-*  Nicolas Cruz, **AKA** @NickCracker
+*  Nicolás Cruz, **AKA** @NickCracker
