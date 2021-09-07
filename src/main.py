@@ -98,6 +98,7 @@ def mostrarVentana() -> None:
 		# Cargando el tablero.
 
 		ventana.blit(ficha_j1, tablero_coordenadas[0][0]);
+		ventana.blit(ficha_j1, (86 + 74, 228));
 		# ventana.blit(ficha_j2, (114, 260));
 
 		# Ficha_1 = pygame.draw.circle(ventana, color_ficha_1, (114, 260), 25);
