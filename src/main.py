@@ -1,127 +1,161 @@
-#!/usr/bin/env python
-# -*- codigon: utf-8 -*-
 # Dependencias.
-import typing
-import sys, pygame
-from pygame import color
+import typing, pygame, sys
+import numpy as np
 from pygame.locals import *
+from pygame.sprite import collide_rect
 
-# Variables globales.
-alto: int = 700;
-ancho: int = 600;
+# Declaración de variables globales.
+NUMERO_FILAS: int = 6;
+NUMERO_COLUMNAS: int = 6;
+ALTO_PANTALLA: int = 700;
+ANCHO_PANTALLA: int = 600;
+TAMAÑO_TABLERO: int = 440;
 
-# Colores.
-color_ficha_1 = pygame.Color(24, 27, 28)     # Ficha negra.
-color_ficha_2 = pygame.Color(255, 255, 255)  # Ficha blanca.
-color_tablero = pygame.Color(13, 171, 118)   # Tablero
+TAMAÑO_CELDA_ALTO: int = (TAMAÑO_TABLERO / NUMERO_FILAS);
+TAMAÑO_CELDA_ANCHO: int = (TAMAÑO_TABLERO / NUMERO_COLUMNAS);
 
-# Tablero: Coordenadas.
+COLOR_CELDAS = (13, 171, 118);
 
-tablero_coordenadas = [
-	[(86, 228), (0,0), (0,0), (0,0), (0,0), (0,0)],
-	[(0,0), (0,0), (0,0), (0,0), (0,0), (0,0)],
-	[(0,0), (0,0), (0,0), (0,0), (0,0), (0,0)],
-	[(0,0), (0,0), (0,0), (0,0), (0,0), (0,0)],
-   [(0,0), (0,0), (0,0), (0,0), (0,0), (0,0)],
-	[(0,0), (0,0), (0,0), (0,0), (0,0), (0,0)]
-];
+# Definición de funciones.
+def controlador_tablero(ventana) -> None:
+	""" ... """
 
-# Definiciones de entidades.
-class Ficha(pygame.sprite.Sprite):
-	# Propiedades.
-	# Constructor.
-	def __init__(self, ID_jugador: str) -> None:
-		# Super constructor.
-		super().__init__();
+	# valores por defecto.
+	posicion_x = 80
+	posicion_y = 220
+
+	# Ciclo para crear la hitbox del tablero.
+	for fila in range(0, NUMERO_FILAS):
+		posicion_x = 80;
+		for columna in range(0, NUMERO_COLUMNAS):
 		
-		# Cargando la imagen de la ficha.
-		self.image = pygame.image.load(f"./assets/ficha_j{ID_jugador}.png")
+			poligono = [   
+				(posicion_x, posicion_y),
+				(posicion_x + TAMAÑO_CELDA_ANCHO, posicion_y),
+				(posicion_x + TAMAÑO_CELDA_ANCHO, posicion_y + TAMAÑO_CELDA_ALTO),
+				(posicion_x, posicion_y + TAMAÑO_CELDA_ALTO)]
 
+			pygame.draw.polygon(ventana, COLOR_CELDAS, poligono, 1);
 
-	# Metodos.
-	# Getters & Setters.
-	# Destructor.
-	pass
+			# Iteración de las columnas.
+			posicion_x += TAMAÑO_CELDA_ANCHO;
 
-class Tablero():
-	# Propiedades.
-	# Constructor.
-	# Metodos.
-	# Getters & Setters.
-	# Destructor.
-	pass
+		# Iteración de las filas.
+		posicion_y += TAMAÑO_CELDA_ALTO;
 
-# Funciones.
-def cargarAssets(nombre_archivo: str, transparencia: bool = False) -> typing.Any:
-	imagen = pygame.image.load(f"./src/assets/{nombre_archivo}");
-	imagen = imagen.convert()
+def cargador_assets(nombre_archivo: str, es_transparente: bool = False) -> typing.Any:
+	""" ... """
+
+	# Cargando la imagen solicitada.
+	recurso = pygame.image.load(f"./src/assets/{nombre_archivo}");
+	recurso = recurso.convert();
+
+	# Habilitando la transparencia de fondo.
+	if es_transparente:
+		color = recurso.get_at((0,0))
+		recurso.set_colorkey(color, RLEACCEL);
 	
-	# Habilitando la transparencia del fondo.
-	if transparencia:
-		color = imagen.get_at((0,0))
-		imagen.set_colorkey(color, RLEACCEL)
+	return recurso
+
+def controlador_coordenadas(posicion_mouse: list) -> list:
+	""" ... """
+
+	# 80, 220
+	coordenada_X: int = -1;
+	coordenada_y: int = -1;
 	
-	return imagen
+	# Definición de la posición en X.
+	if (posicion_mouse[0] in range(80, 150)):
+		coordenada_X: int = 0;
 
+	elif(posicion_mouse[0] in range(150, 220)):
+		coordenada_X: int = 1;
 
-def mostrarVentana() -> None:
-	# Creación de la ventana del juego.
-	ventana = pygame.display.set_mode((ancho, alto));
+	elif(posicion_mouse[0] in range(220, 300)):
+		coordenada_X: int = 2;
 
-	# Configuración: Titulo de la ventana.
-	pygame.display.set_caption("Reversi game!");
+	elif(posicion_mouse[0] in range(300, 370)):
+		coordenada_X: int = 3;
+	
+	elif(posicion_mouse[0] in range(370, 440)):
+		coordenada_X: int = 4;
+	
+	else:
+		coordenada_X: int = 5;
+	
+	# Definición de la posición en Y.
+	if (posicion_mouse[1] in range(220, 290)):
+		coordenada_Y: int = 0;
 
-	# Cargando el fondo del juego.
-	juego_fondo = cargarAssets('board.jpg', transparencia=False);
+	elif(posicion_mouse[1] in range(290, 360)):
+		coordenada_Y: int = 1;
 
-	# Cargar fichas :EJEMPLO
-	ficha_j1 = cargarAssets("ficha_j1.png", transparencia=True);
-	# ficha_j2 = cargarAssets("ficha_j2.png", transparencia=True);
+	elif(posicion_mouse[1] in range(360, 440)):
+		coordenada_Y: int = 2;
+
+	elif(posicion_mouse[1] in range(440, 520)):
+		coordenada_Y: int = 3;
+	
+	elif(posicion_mouse[1] in range(520, 580)):
+		coordenada_Y: int = 4;
+	
+	else:
+		coordenada_Y: int = 5;
+	
+	return list([coordenada_X, coordenada_Y])
+
+def controlador_juego() -> None:
+	""" ... """
+	
+	# Inicio de la ejecución de pygame.
+	pygame.init()
+
+	# Configuraciones de la ventana.
+	ventana = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA));
+	pygame.display.set_caption("REVERSI");
+
+	# Cargando los recursos del juego. 
+	fondo_juego = cargador_assets("background_base.jpg");
 
 	# Control de fotogramas.
-	FPS = pygame.time.Clock()
-	FPS.tick(60)
+	FPS = pygame.time.Clock();
+	FPS.tick(30);
 
-	# Ciclo para mostrar constante mente la ventana del juego.
+	# Ciclo para correr el juego.
 	while True:
 		# Control de eventos.
 		for evento in pygame.event.get():
-			# Evento: Salir del juego.
+			# Evento: salir del juego.
 			if evento.type == QUIT:
 				sys.exit(0);
+			
+			if evento.type == MOUSEBUTTONDOWN:
+				posicion_mouse = pygame.mouse.get_pos();
+				print(f"[DEV] posición: {posicion_mouse}");
 
-			print(evento)
+				# Gestionador de las coordenadas del tablero.
+				coordenadas_tablero = controlador_coordenadas(posicion_mouse);
+				print(f"[DEV] coordenadas grid: {coordenadas_tablero}")
 
-		# Posicionando la imagen.
-		ventana.blit(juego_fondo, (0,0));
 
-		# Cargando el tablero.
-
-		ventana.blit(ficha_j1, tablero_coordenadas[0][0]);
-		ventana.blit(ficha_j1, (86 + 74, 228));
-		# ventana.blit(ficha_j2, (114, 260));
-
-		# Ficha_1 = pygame.draw.circle(ventana, color_ficha_1, (114, 260), 25);
-		# Ficha_1 = pygame.draw.circle(ventana, color_ficha_1, (180, 260), 25);
+		# Posicionando los recursos en la ventana.
+		ventana.blit(fondo_juego, (0,0));
 		
-		
-
-		# pygame.display.flip();
+		# Definición del tablero.
+		controlador_tablero(ventana);
 
 		# Actualización de la ventana.
 		pygame.display.update();
 
 
 def main() -> None:
-	# Iniciando el juego.
-	pygame.init();
+	""" ... """
 
-	# Función para mostrar la ventana del juego.
-	mostrarVentana();
+	# CALL: controlador_juego()
+	controlador_juego();
 
-	# Finalización del juego.
-	return 0;
+	pass
 
-# Inicio de ejecución.
-if __name__ == "__main__":
+# Inicio de las ejecuciones.
+if __name__ == "__main__": 
 	main();
