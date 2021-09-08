@@ -16,8 +16,24 @@ TAMAÑO_CELDA_ANCHO: int = (TAMAÑO_TABLERO / NUMERO_COLUMNAS);
 
 COLOR_CELDAS = (13, 171, 118);
 
+
+# Definición del estado inicial del juego.
+ESTADO_JUEGO = np.zeros((NUMERO_COLUMNAS, NUMERO_FILAS))
+
+# 0 : Celda vacia.
+# 1 : Celda Blanca.
+# 2 : Celda Negra.
+
+# Estado incial del juego:
+ESTADO_JUEGO[2][2] = 1;
+ESTADO_JUEGO[3][3] = 1;
+ESTADO_JUEGO[3][2] = 2;
+ESTADO_JUEGO[2][3] = 2;
+
+print(ESTADO_JUEGO)
+
 # Definición de funciones.
-def controlador_tablero(ventana) -> None:
+def controlador_tablero(ventana, blanca, negra) -> None:
 	""" ... """
 
 	# valores por defecto.
@@ -35,7 +51,21 @@ def controlador_tablero(ventana) -> None:
 				(posicion_x + TAMAÑO_CELDA_ANCHO, posicion_y + TAMAÑO_CELDA_ALTO),
 				(posicion_x, posicion_y + TAMAÑO_CELDA_ALTO)]
 
-			pygame.draw.polygon(ventana, COLOR_CELDAS, poligono, 1);
+
+			# Construcción de los estados.
+			# CASO: celda vacia.
+			if ESTADO_JUEGO[fila][columna] == 0:
+				pygame.draw.polygon(ventana, (255,255,255,255), poligono, 1); # Casilla vacia.
+
+			# CASO: Ficha blanca.
+			elif ESTADO_JUEGO[fila][columna] == 1:
+				celda = pygame.draw.polygon(ventana, (255,255,255,255), poligono, 1);
+				ventana.blit(blanca, ((posicion_x + 7), (posicion_y + 9)))
+
+			# CASO: Ficha negra.
+			elif ESTADO_JUEGO[fila][columna] == 2:
+				celda = pygame.draw.polygon(ventana, (255,255,255,255), poligono, 1);
+				ventana.blit(negra, ((posicion_x + 7), (posicion_y + 9)))
 
 			# Iteración de las columnas.
 			posicion_x += TAMAÑO_CELDA_ANCHO;
@@ -62,7 +92,7 @@ def controlador_coordenadas(posicion_mouse: list) -> list:
 
 	# 80, 220
 	coordenada_X: int = -1;
-	coordenada_y: int = -1;
+	coordenada_Y: int = -1;
 	
 	# Definición de la posición en X.
 	if (posicion_mouse[0] in range(80, 150)):
@@ -113,9 +143,13 @@ def controlador_juego() -> None:
 	# Configuraciones de la ventana.
 	ventana = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA));
 	pygame.display.set_caption("REVERSI");
+	icono = cargador_assets("icono.jpg");
+	pygame.display.set_icon(icono);
 
 	# Cargando los recursos del juego. 
-	fondo_juego = cargador_assets("background_base.jpg");
+	fondo_juego = cargador_assets("board.jpg");
+	ficha_blanca = cargador_assets("ficha_j2.png", True);
+	ficha_negra = cargador_assets("ficha_j1.png", True);
 
 	# Control de fotogramas.
 	FPS = pygame.time.Clock();
@@ -137,15 +171,14 @@ def controlador_juego() -> None:
 				coordenadas_tablero = controlador_coordenadas(posicion_mouse);
 				print(f"[DEV] coordenadas grid: {coordenadas_tablero}")
 
-
 		# Posicionando los recursos en la ventana.
 		ventana.blit(fondo_juego, (0,0));
 		
 		# Definición del tablero.
-		controlador_tablero(ventana);
+		controlador_tablero(ventana, ficha_blanca, ficha_negra);
 
 		# Actualización de la ventana.
-		pygame.display.update();
+		pygame.display.flip();
 
 
 def main() -> None:
