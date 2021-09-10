@@ -25,6 +25,28 @@ Generación de un entorno de desarrollo con python
 ```
 
 
+## Aquitectura del directorio.
+
+```py
+   main.py
+   # Archivo destinado a la ejecución de todo el sistema.
+```
+
+```py
+   GUI.py
+   # Archivo destinado a la implementación de la interfaz grafica del usuario.
+```
+
+```py
+   IA.py
+   # Archivo destinado al desarrollo de la Inteligencia artificial.
+```
+
+```py
+   GAME.py
+   # Archivo destinado a la jugabilidad del programa.
+```
+
 ---
 ## Ejecución y uso
 
