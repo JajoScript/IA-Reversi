@@ -28,7 +28,12 @@ Generación de un entorno de desarrollo con python
 ## Aquitectura del directorio.
 
 ```py
-   main.py
+   __init__.py
+   # Archivo destinado a estructurar el directorio src como un paquete.
+```
+
+```py
+   __main__.py
    # Archivo destinado a la ejecución de todo el sistema.
 ```
 
@@ -63,7 +68,7 @@ Instalar las dependencias (recuerda crear antes un entorno de desarrollo):
 
 Iniciar la ejecución:
 ```bash
-   $py src/main.py
+   $py src/
 ```
 
 ---
