@@ -2,10 +2,11 @@
 import typing
 import sys
 import pygame
-import time
+# import time
 from pygame.locals import *
+
+# Local imports
 from GAME import *
-import numpy as np
 
 # -- Definición de variables globales. --
 # Configuración para la ventana.
@@ -30,7 +31,15 @@ COLOR_VACIO:tuple = (255, 255, 255, 255);
 COLOR_TEXTO:tuple = (24, 27, 28);
 
 # Definición del estado inicial del juego.
-ESTADO_JUEGO:list = np.zeros((NUMERO_COLUMNAS, NUMERO_FILAS)); # Tablero vacio.
+# Tablero vacio.
+ESTADO_JUEGO:list[list[int]] = [
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0]];
+
 # [0] : Celda vacia.
 # [1] : Celda Blanca.
 # [2] : Celda Negra.
@@ -101,6 +110,8 @@ def controlador_assets(nombre_archivo:str, es_transparente:bool = False) -> typi
 
 def controlador_coordenadas(posicion_mouse: list) -> list:
 	"""..."""
+	# posicion_mouse[0] = x
+	# posicion_mouse[1] = y
 
 	# Coordenadas por defecto.
 	coordenadas_x:int = -1;
@@ -124,7 +135,7 @@ def controlador_coordenadas(posicion_mouse: list) -> list:
 	else:
 		coordenadas_x = -1;
 
-	# Definición de posiciones en X.
+	# Definición de posiciones en Y.
 	if (posicion_mouse[1] in range(220, 290)):
 		coordenadas_y = 0;
 	elif (posicion_mouse[1] in range(290, 360)):
@@ -193,37 +204,36 @@ def controlador_interfaz() -> None:
 			if evento.type == MOUSEBUTTONDOWN:
 				posicion_mouse: list = pygame.mouse.get_pos();
 				
-
 				# Gestionador de las coordenadas del tablero.
 				coordenadas_tablero = controlador_coordenadas(posicion_mouse);
+	
+				# Implementando la jugabilidad.	
+				if (controlador_tablero_lleno(ESTADO_JUEGO)) and (coordenadas_tablero[0] != -1) and (coordenadas_tablero[1] != -1):
+					lista_turnos:list[bool] = controlador_turnos(ESTADO_JUEGO, coordenadas_tablero, TURNO_BLANCA, TURNO_NEGRA);
 
-				# Gestionador de los turnos.
-				controlador_turnos(ventana, fuente_juego, TURNO_BLANCA, TURNO_NEGRA);
+					# Turnos de cada ficha.
+					TURNO_BLANCA = lista_turnos[0];
+					TURNO_NEGRA = lista_turnos[1];
+
+					# Renderizado del texto
+					if (TURNO_NEGRA):
+						texto_turnos = pygame.font.Font.render(fuente_juego, "Turno: Ficha negra", True, (0, 0, 255));
+
+					elif (TURNO_BLANCA):
+						texto_turnos = pygame.font.Font.render(fuente_juego, "Turno: Ficha blanca", True, (0, 0, 255));
+					else:
+						texto_turnos = pygame.font.Font.render(fuente_juego, "No quedan más turnos", True, (0, 0, 255));
+
+					print(f"[DEV] posicion mouse: {posicion_mouse}")
+					print(f"[DEV] coordenadas grid: {coordenadas_tablero}")
+
+				elif (coordenadas_tablero[0] == -1) or (coordenadas_tablero[1] == -1):
+					print("[DEV] movimiento fuera del tablero!");
+					print(f"[DEV] posicion mouse: {posicion_mouse}")
+					print(f"[DEV] coordenadas grid: {coordenadas_tablero}")
 				
-				# Recordatorio: sacar esto de aqui. 
-				# Debe ir en jugabilidad...
-				# if TURNO_NEGRA and Esta_vacia(coordenadas_tablero) and Es_adyacente(coordenadas_tablero) and Permite_salto_negra(coordenadas_tablero):
-				# 	ESTADO_JUEGO[coordenadas_tablero[0]][coordenadas_tablero[1]]=2
-				# 	TURNO_NEGRA=False
-				# 	TURNO_BLANCA=True
-				# elif TURNO_BLANCA and Esta_vacia(coordenadas_tablero) and Es_adyacente(coordenadas_tablero) and Permite_salto_blanca(coordenadas_tablero):
-				# 	ESTADO_JUEGO[coordenadas_tablero[0]][coordenadas_tablero[1]]=1
-				# 	TURNO_NEGRA=True
-				# 	TURNO_BLANCA=False
-				
-				print(f"[DEV] posicion mouse: {posicion_mouse}")
-				print(f"[DEV] coordenadas grid: {coordenadas_tablero}")
-
-				# Renderizado del texto
-				if (TURNO_NEGRA):
-					texto_turnos = pygame.font.Font.render(fuente_juego, "Turno: Ficha negra", True, (0, 0, 255));
-					TURNO_NEGRA = not (TURNO_NEGRA);
-					TURNO_BLANCA = not (TURNO_BLANCA);
-
-				elif (TURNO_BLANCA):
-					texto_turnos = pygame.font.Font.render(fuente_juego, "Turno: Ficha blanca", True, (0, 0, 255));
-					TURNO_BLANCA = not (TURNO_BLANCA);
-					TURNO_NEGRA = not (TURNO_NEGRA);
+				else:
+					texto_turnos = pygame.font.Font.render(fuente_juego, "No quedan más turnos", True, (0, 0, 255));
 					
 				
 		# Renderizado de texto: Turno de las fichas.

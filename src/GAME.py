@@ -2,14 +2,69 @@
 from typing import Any
 
 # Definición de funciones.
-def controlador_turnos(ventana, fuente_juego, TURNO_BLANCA: bool, TURNO_NEGRA:bool) -> Any:
-	""" ... """
-	print("[DEV] gestionando turnos...");
-	pass
+def controlador_tablero_lleno(estado_juego:list[list[int]]) -> bool:
+	
+	celdas_vacias:int = 0
+	for fila in estado_juego:
+		celdas_vacias += fila.count(0);
+	
+	# Caso 1: no quedan celdas vacias.
+	if celdas_vacias == 0:
+		print("[DEV] NO QUEDAN CELDAS VACIAS.");
+		return False;
 
+	# Caso 2: quedan celdas vacias.
+	elif celdas_vacias != 0:
+		print("[DEV] QUEDAN CELDAS VACIAS.");
+		return True;
+
+def controlador_turnos(estado_juego:list[list[int]], coordenadas:list[int], TURNO_BLANCA: bool, TURNO_NEGRA:bool) -> list[bool]:
+	""" ... """
+	print("[DEV] funcionalidad ...")
+	print(f"[DEV] turnos: [blancas][negras] {TURNO_BLANCA}, {TURNO_NEGRA}")
+
+	# Validación de turnos.
+	if (TURNO_NEGRA):
+		print("[DEV] va a jugar negra");
+
+	elif (TURNO_BLANCA):
+		print("[DEV] va a jugar blanca");
+
+
+	# Controlador tablero lleno.
+	if (controlador_tablero_lleno(estado_juego)):
+		# Controla fichas negras.
+		if (TURNO_NEGRA) and (controlador_vacias(estado_juego, coordenadas)) and (controlador_adyacentes(estado_juego, coordenadas)) and (validacion_movimiento_negras(estado_juego, coordenadas)):
+			print("[DEV] Acaba de jugar negra");
+
+			estado_juego[coordenadas[0]][coordenadas[1]] = 2;
+			TURNO_NEGRA = not(TURNO_NEGRA);
+			TURNO_BLANCA = not(TURNO_BLANCA);
+
+			return [TURNO_BLANCA, TURNO_NEGRA];
+
+		# Controla fichas blancas.
+		elif (TURNO_BLANCA) and (controlador_vacias(estado_juego, coordenadas)) and (controlador_adyacentes(estado_juego, coordenadas)) and (validacion_movimiento_blancas(estado_juego, coordenadas)):
+			print("[DEV] Acaba de jugar blanca");
+
+			estado_juego[coordenadas[0]][coordenadas[1]] = 1;
+			TURNO_NEGRA = not(TURNO_NEGRA);
+			TURNO_BLANCA = not(TURNO_BLANCA);
+
+			return [TURNO_BLANCA, TURNO_NEGRA];
+
+		# Movimientos invalidos.
+		else:
+			print("[DEV] movimiento invalido!");
+			return [TURNO_BLANCA, TURNO_NEGRA];
+	
+	else:
+		print("[DEV] no quedan fichas disponibles.");
+		return [False, False]
 
 def validacion_movimiento_blancas(estado_juego, coordenadas) -> bool:
 	""" ... """
+	print("[DEV] EJECUTANDO: validacion_movimiento blancas.....");
 
 	fila: int = coordenadas[0];
 	columna:int = coordenadas[1];
@@ -66,7 +121,7 @@ def validacion_movimiento_blancas(estado_juego, coordenadas) -> bool:
 			else:
 				validacion_3 = False;
 		else: 
-			validacion_2 = False;
+			validacion_3 = False;
 
 		# Busqueda: Ficha negra arriba.
 		auxiliar = fila - 1;
@@ -74,7 +129,7 @@ def validacion_movimiento_blancas(estado_juego, coordenadas) -> bool:
 		if (auxiliar < 5) and (auxiliar > 0):
 			if (estado_juego[auxiliar][columna] == 2):
 				for i in range(auxiliar):
-					if (estado_juego[auxiliar - i - 1][columna] == 1):
+					if (estado_juego[(auxiliar - i - 1)][columna] == 1):
 						controlador_convertir_fichas(estado_juego, fila, (auxiliar - i - 1), columna, columna, "arc", 1);
 						validacion_4 = True;
 			else:
@@ -156,14 +211,18 @@ def validacion_movimiento_blancas(estado_juego, coordenadas) -> bool:
 
 		# Analisis de validaciones.	
 		if (validacion_1) or (validacion_2) or (validacion_3) or (validacion_4) or (validacion_5) or (validacion_6) or (validacion_7) or (validacion_8):
+			print("[DEV] EJECUTANDO: validacion_movimiento blancas, retorno: true");
 			return True;
 		else:
+			print("[DEV] EJECUTANDO: validacion_movimiento blancas, retorno: false");
 			return False;
 	else:
+		print("[DEV] EJECUTANDO: validacion_movimiento blancas, retorno: false");
 		return False;
 
 def validacion_movimiento_negras(estado_juego:list[list[int]], coordenadas:list[int]) -> bool:
 	""" ... """
+	print("[DEV] EJECUTANDO: validacion_movimiento_negras.....");
 
 	fila:int = coordenadas[0];
 	columna: int = coordenadas[1];
@@ -184,7 +243,7 @@ def validacion_movimiento_negras(estado_juego:list[list[int]], coordenadas:list[
 		if (auxiliar < 5) and (auxiliar > 0):
 			if (estado_juego[fila][auxiliar] == 1):
 				for i in range(5 - auxiliar):
-					if estado_juego[fila][auxiliar+i+1] == 2:
+					if estado_juego[fila][(auxiliar + i + 1)] == 2:
 						controlador_convertir_fichas(estado_juego, fila, fila, auxiliar, (auxiliar + i + 1), "cde", 2)
 						validacion_1 = True;
 			else:
@@ -211,7 +270,7 @@ def validacion_movimiento_negras(estado_juego:list[list[int]], coordenadas:list[
 		if (auxiliar < 5) and (auxiliar > 0):
 			if (estado_juego[auxiliar][columna] == 1):
 				for i in range((5 - auxiliar)):
-					if (estado_juego[auxiliar+i+1][columna] == 2):
+					if (estado_juego[(auxiliar + i + 1)][columna] == 2):
 						controlador_convertir_fichas(estado_juego, fila, (auxiliar + i + 1), columna, columna, "abc", 2);
 						validacion_3 = True;
 			else:
@@ -237,7 +296,7 @@ def validacion_movimiento_negras(estado_juego:list[list[int]], coordenadas:list[
 		auxiliar_2:int = (columna + 1);
 		
 		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2>0):
-			par:list[int] = [auxiliar,5-auxiliar_2];
+			par:list[int] = [auxiliar, (5 - auxiliar_2)];
 			rango = min(par);
 
 			if (estado_juego[auxiliar][auxiliar_2] == 1):
@@ -291,7 +350,7 @@ def validacion_movimiento_negras(estado_juego:list[list[int]], coordenadas:list[
 		auxiliar_2 = (columna - 1);
 		
 		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2 > 0):
-			par = [5-auxiliar,auxiliar_2];
+			par = [(5 - auxiliar),auxiliar_2];
 			rango = min(par);
 			
 			if (estado_juego[auxiliar][auxiliar_2] == 1):
@@ -306,10 +365,13 @@ def validacion_movimiento_negras(estado_juego:list[list[int]], coordenadas:list[
 
 		# Analisis de validaciones.		
 		if (validacion_1) or (validacion_2) or (validacion_3) or (validacion_4) or (validacion_5) or (validacion_6) or (validacion_7) or (validacion_8):
+			print("[DEV] EJECUTANDO: validacion_movimiento_negras, retorno: true");
 			return True;
 		else:
+			print("[DEV] EJECUTANDO: validacion_movimiento_negras, retorno: false");
 			return False;
 	else:
+		print("[DEV] EJECUTANDO: validacion_movimiento_negras, retorno: false");
 		return False;
 
 
@@ -324,6 +386,7 @@ def controlador_convertir_fichas(estado_juego:list[list[int]], x1:int, x2:int, y
 	elif	(modo == "ciz"):
 		while (y1 != y2):
 			estado_juego[x1][y1] = color;
+			y1=y1-1
 
 	elif	(modo == "arc"):
 		while	(x1 != x2):
@@ -362,15 +425,21 @@ def controlador_convertir_fichas(estado_juego:list[list[int]], x1:int, x2:int, y
 
 def controlador_vacias(estado_juego:list[list[int]], coordenadas:list[int]) -> bool:
 	""" ... """
+	print("[DEV] EJECUTANDO: controlador_vacias.....");
 
 	if (estado_juego[coordenadas[0]][coordenadas[1]] == 0):
+		print("[DEV] EJECUTANDO: controlador_vacias, retorno: true");
 		return True
 	else:
+		print("[DEV] EJECUTANDO: controlador_vacias, retorno: false");
 		return False
 
 
 def controlador_adyacentes(estado_juego:list[list[int]], coordenadas:list[int]) -> bool:
 	""" ... """
+
+	print("[DEV] EJECUTANDO: controlador_adyacentes.....");
+
 
 	x:int = coordenadas[0];
 	y:int = coordenadas[1];
@@ -378,132 +447,200 @@ def controlador_adyacentes(estado_juego:list[list[int]], coordenadas:list[int]) 
 	# Comprobaciones.
 	if	(x < 5) and (x > 0) and (y < 5) and (y > 0):
 		if		(estado_juego[x + 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		elif	(estado_juego[x - 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		elif	(estado_juego[x][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		elif	(estado_juego[x][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 			
 		elif	(estado_juego[x + 1][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		elif	(estado_juego[x - 1][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		
 		elif	(estado_juego[x + 1][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		elif	(estado_juego[x - 1][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: falso");
 			return False;
 	
 	if (x == 5) and (y > 0) and (y < 5):
 		if		(estado_juego[x - 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		
 		elif	(estado_juego[x - 1][ y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x - 1][ y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		
 		elif	(estado_juego[x][ y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x][ y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 			return False;
 	
 	if	(x == 0) and (y > 0) and (y < 5):
 		if		(estado_juego[x + 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		elif	(estado_juego[x + 1][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		elif	(estado_juego[x + 1][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		elif	(estado_juego[x][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 			return False;
 	
 	if (y == 5) and (x < 5) and (x > 0):
 		if		(estado_juego[x + 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x - 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 		
 		elif	(estado_juego[x - 1][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x + 1][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		elif	(estado_juego[x][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 			return False;
 	
 	if	(y == 0) and (x < 5) and (x > 0):
 		if		(estado_juego[x + 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x - 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		elif	(estado_juego[x + 1][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x - 1][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		elif	(estado_juego[x][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
 
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 			return False; 	
 
 	if	(x == 0) and (y == 0):
 		if		(estado_juego[x + 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x + 1][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 			return False;
 	
 	if (x == 0) and (y == 5):
 		if 	(estado_juego[x + 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x + 1][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 			return False;
 
 	if (x == 5) and (y == 0):
 		if		(estado_juego[x - 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x - 1][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif	(estado_juego[x][y + 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 			return False;
 
 	if (x == 5) and (y == 5):
 		if (estado_juego[x - 1][y] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif (estado_juego[x - 1][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		elif (estado_juego[x][y - 1] != 0):
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
 			return True;
+
 		else:
+			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 			return False;
 	
 	else:
+		print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
 		return False;
