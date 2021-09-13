@@ -2,11 +2,14 @@
 import typing
 import sys
 import pygame
+import numpy as np
 # import time
 from pygame.locals import *
 
 # Local imports
 from GAME import *
+from CLASE import *
+from IA import *
 
 # -- Definición de variables globales. --
 # Configuración para la ventana.
@@ -32,13 +35,15 @@ COLOR_TEXTO:tuple = (24, 27, 28);
 
 # Definición del estado inicial del juego.
 # Tablero vacio.
-ESTADO_JUEGO:list[list[int]] = [
+"""ESTADO_JUEGO= [
 	[0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0]];
+	[0, 0, 0, 0, 0, 0]];"""
+
+ESTADO_JUEGO=np.zeros((6,6))
 
 # [0] : Celda vacia.
 # [1] : Celda Blanca.
@@ -162,7 +167,7 @@ def controlador_coordenadas(posicion_mouse: list) -> list:
 		return list([coordenadas_y, coordenadas_x]);
 
 
-def controlador_interfaz() -> None:
+def controlador_interfaz(juego) -> None:
 	""" ... """
 	
 	# Inicio de la ejecución de pygame.
@@ -189,6 +194,7 @@ def controlador_interfaz() -> None:
 	# Variables para el manejo de turnos.
 	TURNO_BLANCA:bool = False;
 	TURNO_NEGRA:bool = True;
+	resultado=None
 
 	# Ciclo para correr el juego.
 	while True:
@@ -208,6 +214,22 @@ def controlador_interfaz() -> None:
 				coordenadas_tablero = controlador_coordenadas(posicion_mouse);
 	
 				# Implementando la jugabilidad.	
+				if juego.Identificador_fin_juego(ESTADO_JUEGO,2):
+					if juego.Esta_vacia(coordenadas_tablero) and juego.Es_adyacente(coordenadas_tablero) and juego.Permite_salto_negra(coordenadas_tablero):
+						ESTADO_JUEGO[coordenadas_tablero[0]][coordenadas_tablero[1]]=2
+						estado=copy.deepcopy(ESTADO_JUEGO)
+						if juego.Identificador_fin_juego(ESTADO_JUEGO,1):
+							resultado= minimax(juego,estado,0,-1)
+							coordenada_blanca=resultado[1]
+							juego.Jugar(coordenada_blanca,1)
+						else:
+							print("[JUEGO TERMINADO]")
+				else:
+					print("[JUEGO TERMINADO]")
+
+					
+
+				"""
 				if (controlador_tablero_lleno(ESTADO_JUEGO)) and (coordenadas_tablero[0] != -1) and (coordenadas_tablero[1] != -1):
 					lista_turnos:list[bool] = controlador_turnos(ESTADO_JUEGO, coordenadas_tablero, TURNO_BLANCA, TURNO_NEGRA);
 
@@ -234,6 +256,7 @@ def controlador_interfaz() -> None:
 				
 				else:
 					texto_turnos = pygame.font.Font.render(fuente_juego, "No quedan más turnos", True, (0, 0, 255));
+				"""
 					
 				
 		# Renderizado de texto: Turno de las fichas.

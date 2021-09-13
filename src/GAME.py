@@ -2,7 +2,8 @@
 from typing import Any
 
 # Definición de funciones.
-def controlador_tablero_lleno(estado_juego:list[list[int]]) -> bool:
+#Retorna verdadero si aun hay casillas por jugar en el tablero
+def controlador_tablero_lleno(estado_juego) -> bool:
 	
 	celdas_vacias:int = 0
 	for fila in estado_juego:
@@ -18,7 +19,7 @@ def controlador_tablero_lleno(estado_juego:list[list[int]]) -> bool:
 		print("[DEV] QUEDAN CELDAS VACIAS.");
 		return True;
 
-def controlador_turnos(estado_juego:list[list[int]], coordenadas:list[int], TURNO_BLANCA: bool, TURNO_NEGRA:bool) -> list[bool]:
+def controlador_turnos(estado_juego, coordenadas, TURNO_BLANCA: bool, TURNO_NEGRA:bool):
 	""" ... """
 	print("[DEV] funcionalidad ...")
 	print(f"[DEV] turnos: [blancas][negras] {TURNO_BLANCA}, {TURNO_NEGRA}")
@@ -220,7 +221,7 @@ def validacion_movimiento_blancas(estado_juego, coordenadas) -> bool:
 		print("[DEV] EJECUTANDO: validacion_movimiento blancas, retorno: false");
 		return False;
 
-def validacion_movimiento_negras(estado_juego:list[list[int]], coordenadas:list[int]) -> bool:
+def validacion_movimiento_negras(estado_juego, coordenadas) -> bool:
 	""" ... """
 	print("[DEV] EJECUTANDO: validacion_movimiento_negras.....");
 
@@ -374,8 +375,7 @@ def validacion_movimiento_negras(estado_juego:list[list[int]], coordenadas:list[
 		print("[DEV] EJECUTANDO: validacion_movimiento_negras, retorno: false");
 		return False;
 
-
-def controlador_convertir_fichas(estado_juego:list[list[int]], x1:int, x2:int, y1:int, y2:int, modo:str, color:int)-> None:
+def controlador_convertir_fichas(estado_juego, x1:int, x2:int, y1:int, y2:int, modo:str, color:int)-> None:
 	""" ... """
 
 	if		(modo == "cde"):
@@ -422,8 +422,7 @@ def controlador_convertir_fichas(estado_juego:list[list[int]], x1:int, x2:int, y
 			x1 = (x1 + 1);
 			y1 = (y1 -1);
 
-
-def controlador_vacias(estado_juego:list[list[int]], coordenadas:list[int]) -> bool:
+def controlador_vacias(estado_juego, coordenadas) -> bool:
 	""" ... """
 	print("[DEV] EJECUTANDO: controlador_vacias.....");
 
@@ -434,8 +433,7 @@ def controlador_vacias(estado_juego:list[list[int]], coordenadas:list[int]) -> b
 		print("[DEV] EJECUTANDO: controlador_vacias, retorno: false");
 		return False
 
-
-def controlador_adyacentes(estado_juego:list[list[int]], coordenadas:list[int]) -> bool:
+def controlador_adyacentes(estado_juego, coordenadas) -> bool:
 	""" ... """
 
 	print("[DEV] EJECUTANDO: controlador_adyacentes.....");
