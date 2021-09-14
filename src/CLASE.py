@@ -288,6 +288,11 @@ class Reversi:
 			return False
 
 	def Convertir(self,x1,x2,y1,y2,modo,color):
+		# x1 : fila_inicio
+		# x2 : fila_destino
+		# y1 : columna_inicio
+		# y2 : columna_destino
+
 		if modo=="cde":
 			while y1!=y2:
 				self.ESTADO_JUEGO[x1][y1]=color

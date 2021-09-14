@@ -54,6 +54,22 @@ class Reversi():
 		fila:int = coordenadas[0];
 		columna:int = coordenadas[1];
 		validaciones:List[bool];
+		estado_juego:List[List[int]] = self.GET_estado_juego();
+
+		#	Comprobación: La casilla seleccionada tiene adyacente.
+		if (self.validacion_es_adyacente([fila, columna])):
+			#	Busqueda: Ficha negra a la derecha.
+			columna_auxiliar:int = (columna + 1);
+
+			#	Comprobar que la casilla no este en un borde.
+			if ((columna_auxiliar < 5) and (columna_auxiliar > 0)):
+				#	Identificar la casilla con ficha negra (2)
+				if estado_juego[fila][columna_auxiliar] == 2:
+					for i in range((5 - columna_auxiliar)):
+						# Recordatorio: ... me quede aqui.
+						pass
+
+
 
 
 	def validacion_salto_negra(self):
@@ -61,6 +77,8 @@ class Reversi():
 
 	
 	def realizar_vistazos(self, tablero, indice_y, indice_x, modo) -> bool:
+		"""..."""
+
 		#	Realizar vistazo según lo indica.
 		if (modo == "arriba"):
 			if (tablero[indice_y - 1][indice_x] != 0):
@@ -103,6 +121,8 @@ class Reversi():
 		
 
 	def validacion_es_adyacente(self, coordenadas:List[int]) -> bool:
+		"""..."""
+
 		#	Recordatorio: El estandar de coordenada es: [y][x] == [fila][columna];
 		#	Variables locales.
 		indice_y:int = coordenadas[0];
@@ -250,6 +270,8 @@ class Reversi():
 
 
 	def validacion_esta_vacia(self, coordenadas:List[int]) -> bool:
+		"""..."""
+
 		#	Recordatorio: El estandar de coordenada es: [y][x] == [fila][columna];
 		indice_y:int = coordenadas[0];
 		indice_x:int = coordenadas[1];
@@ -263,12 +285,74 @@ class Reversi():
 			return False;
 
 
-	def convertir_fichas(self) -> None:
-		pass
+	def convertir_fichas(self, fila_inicio:int, fila_destino:int, columna_inicio:int, columna_destino:int, modo:str, color_ficha:int) -> None:
+		"""..."""
 
+		# Traemos el estado del juego para aplicarles las nuevas configuraciones.
+		estado_juego:List[List[int]] = self.GET_estado_juego();
 
-	def algoritmo_MINMAX(self) -> None:
-		pass
+		#	Transformar fichas: Hacias arriba.
+		if (modo == "arriba"):
+			while(fila_inicio != fila_destino):
+				#	Configurando la ficha del tablero.
+				estado_juego[fila_inicio][columna_inicio] = color_ficha; 
+				fila_inicio = (fila_inicio - 1);
+			
+		#	Transformar fichas: Hacias arriba derecha.
+		elif (modo == "arriba-derecha"):
+			while(fila_inicio != fila_destino):
+				#	Configurando la ficha del tablero.
+				estado_juego[fila_inicio][columna_inicio] = color_ficha; 
+				fila_inicio = (fila_inicio - 1);
+				columna_inicio = (columna_inicio + 1);
+
+		#	Transformar fichas: Hacias arriba izquierda.
+		elif (modo == "arriba-izquierda"):
+			while(fila_inicio != fila_destino):
+				#	Configurando la ficha del tablero.
+				estado_juego[fila_inicio][columna_inicio] = color_ficha; 
+				fila_inicio = (fila_inicio - 1);
+				columna_inicio = (columna_inicio - 1);
+
+		#	Transformar fichas: Hacias la derecha.
+		elif (modo == "derecha"):
+			while(columna_inicio != columna_destino):
+				#	Configurando la ficha del tablero.
+				estado_juego[fila_inicio][columna_inicio] = color_ficha; 
+				columna_inicio = (columna_inicio + 1);
+			
+		#	Transformar fichas: Hacias la izquierda.
+		elif (modo == "izquierda"):
+			while(columna_inicio != columna_destino):
+				#	Configurando la ficha del tablero.
+				estado_juego[fila_inicio][columna_inicio] = color_ficha;
+				columna_inicio = (columna_inicio - 1);
+
+		#	Transformar fichas: Hacias abajo.
+		elif (modo == "abajo"):
+			while(fila_inicio != fila_destino):
+				#	Configurando la ficha del tablero.
+				estado_juego[fila_inicio][columna_inicio] = color_ficha; 
+				fila_inicio = (fila_inicio + 1);
+			
+		#	Transformar fichas: Hacias abajo derecha.
+		elif (modo == "abajo-derecha"):
+			while(fila_inicio != fila_destino):
+				#	Configurando la ficha del tablero.
+				estado_juego[fila_inicio][columna_inicio] = color_ficha; 
+				fila_inicio = (fila_inicio + 1);
+				columna_inicio = (columna_inicio + 1);
+			
+		#	Transformar fichas: Hacias abajo izquierda.
+		elif (modo == "abajo-izquierda"):
+			while(fila_inicio != fila_destino):
+				#	Configurando la ficha del tablero.
+				estado_juego[fila_inicio][columna_inicio] = color_ficha; 
+				fila_inicio = (fila_inicio + 1);
+				columna_inicio = (columna_inicio - 1);
+
+		#	Guardando la configuración del estado del juego.
+		self.SET_estado_juego(estado_juego);
 
 
 	#	Getters & Setters.
