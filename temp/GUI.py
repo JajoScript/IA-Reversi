@@ -1,7 +1,7 @@
 #	-- Dependencias. --
 from GAME import Reversi
 import typing, sys, time, os;
-from typing import Any;
+from typing import Any, List;
 import pygame;
 
 #	-- Funciones. --
@@ -50,7 +50,7 @@ class InterfazGrafica():
 		
 		# Estado del juego desde la entidad "juego".
 		juego:Reversi = self.GET_juego_reversi();
-		estado_juego:list[list[int]] = juego.GET_estado_juego();
+		estado_juego:List[List[int]] = juego.GET_estado_juego();
 
 		#	Renderizado de las fichas.
 		numero_filas:int = juego.GET_numero_filas();
@@ -64,18 +64,17 @@ class InterfazGrafica():
 			#	Iteración de las columnas.
 			POSICION_X: int = 80;
 			for columna in range(0, juego.GET_numero_columnas()):
-				estado_juego:list[list[int]] = juego.GET_estado_juego();
-
+			
 				# CASO 1: celda vacia.
 
 				# CASO 2: celda con FICHA BLANCA.
-				if estado_juego[fila, columna] == 1:
+				if estado_juego[fila][columna] == 1:
 					ventana = self.GET_ventana();
 					ficha = self.GET_ficha_blanca();
 					ventana.blit(ficha, ((POSICION_X + 7), (POSICION_Y + 9)))
 
 				# CASO 3: celda con FICHA NEGRA.
-				elif estado_juego[fila, columna] == 2:
+				elif estado_juego[fila][columna] == 2:
 					ventana = self.GET_ventana();
 					ficha = self.GET_ficha_negra();
 					ventana.blit(ficha, ((POSICION_X + 7), (POSICION_Y + 9)))
@@ -95,7 +94,8 @@ class InterfazGrafica():
 		"""..."""
 		print(f"[DEV] Nueva dificultad: {dificultad}");
 
-		# Cambiando la dificultad ...
+		#	Cambiando la dificultad 
+		#	...
 		
 		# Creando un nuevo juego.
 		self.controlador_nuevo_juego()
@@ -103,6 +103,7 @@ class InterfazGrafica():
 
 	def controlador_boton_pista(self) -> None:
 		"""..."""
+		#	Aplicando una pista.
 		print("[DEV][EVENT] Se pulso el boton pista");
 
 
@@ -139,7 +140,7 @@ class InterfazGrafica():
 			return None;
 
 
-	def controlador_coordenadas_tablero(self, coordenadas:list[int]) -> None:
+	def controlador_coordenadas_tablero(self, coordenadas:List[int]) -> None:
 		"""..."""
 
 		#	Variables locales.
@@ -194,7 +195,7 @@ class InterfazGrafica():
 		print(f"[DEV] tablero: [{indice_y}][{indice_x}]");
 
 
-	def controlador_coordenadas(self, coordenadas:list[int]) -> None:
+	def controlador_coordenadas(self, coordenadas:List[int]) -> None:
 		"""..."""
 
 		#	Variables locales.
@@ -273,6 +274,9 @@ class InterfazGrafica():
 			#	Renderizado de fichas en el tablero.
 			self.controlador_tablero();
 
+			# Renderizado de textos.
+			# ...
+
 			#	Control de eventos.
 			for evento in pygame.event.get():
 				#	Evento: Salir del juego.
@@ -282,7 +286,7 @@ class InterfazGrafica():
 				#	Evento: Click en la pantalla.
 				if evento.type == pygame.MOUSEBUTTONDOWN:
 					#	Capturando las coordenadas.
-					posicion_mouse:list[int] = pygame.mouse.get_pos();
+					posicion_mouse:List[int] = pygame.mouse.get_pos();
 					print(f"[DEV] coordenadas: (x: {posicion_mouse[0]}, y: {posicion_mouse[1]})");
 
 					#	Gestionando coordenadas.
@@ -296,42 +300,42 @@ class InterfazGrafica():
 
 
 	#	Getters & Setters.
-		#	TAMAÑO TABLERO.
+	#		TAMAÑO TABLERO.
 	def GET_tamaño_tablero(self) -> int:
 		return self.TAMAÑO_TABLERO;
 
 	def SET_tamaño_tablero(self, tamaño_nuevo) -> None:
 		self.TAMAÑO_TABLERO = tamaño_nuevo;
 
-		#	FICHA NEGRA.
+	#		FICHA NEGRA.
 	def GET_ficha_negra(self) -> Any:
 		return self.FICHA_NEGRA;
 
 	def SET_ficha_negra(self, nueva_ficha) -> None:
 		self.FICHA_NEGRA = nueva_ficha;
 
-		#	FICHA BLANCA.
+	#		FICHA BLANCA.
 	def GET_ficha_blanca(self) -> Any:
 		return self.FICHA_BLANCA;
 
 	def SET_ficha_blanca(self, nueva_ficha) -> None:
 		self.FICHA_BLANCA = nueva_ficha;
 
-		#	VENTANA.
+	#		VENTANA.
 	def GET_ventana(self) -> Any:
 		return self.VENTANA;
 
 	def SET_ventana(self, nuevo_display:Any) -> None:
 		self.VENTANA = nuevo_display;
 
-		#	JUEGO.
+	#		JUEGO.
 	def GET_juego_reversi(self) -> Reversi:
 		return self.JUEGO_REVERSI;
 
 	def SET_juego_reversi(self, nueva_instancia) -> None:
 		self.JUEGO_REVERSI = nueva_instancia;
 	
-		#	COORDENADAS.		
+	#		COORDENADAS.		
 	def GET_coordenada_x(self) -> int:
 		return self.COORDENADA_X;
 	
@@ -344,28 +348,28 @@ class InterfazGrafica():
 	def SET_coordenada_y(self, nueva_coordenada:int) -> None:
 		self.COORDENADA_Y = nueva_coordenada;
 
-		#	DIRECTORIO.
+	#		DIRECTORIO.
 	def GET_directorio(self) -> str:
 		return self.DIRECTORIO;
 
 	def SET_directorio(self, nuevo_directorio:str) -> None:
 		self.DIRECTORIO = nuevo_directorio;
 		
-		#	ALTO_PANTALLA.
+	#		ALTO_PANTALLA.
 	def GET_alto_pantalla(self) -> int:
 		return self.ALTO_PANTALLA;
 	
 	def SET_alto_pantalla(self, nuevo_alto:int) -> None:
 		self.ALTO_PANTALLA = nuevo_alto;
 
-		#	ANCHO_PANTALLA.
+	#		ANCHO_PANTALLA.
 	def GET_ancho_pantalla(self) -> int:
 		return self.ANCHO_PANTALLA;
 	
 	def SET_ancho_pantalla(self, nuevo_ancho:int) -> None:
 		self.ANCHO_PANTALLA = nuevo_ancho;
 
-		#	COLORES.
+	#		COLORES.
 	def GET_color_celdas(self):
 		return self.COLOR_CELDAS;
 
