@@ -1,4 +1,5 @@
 #	-- Dependencias. --
+from IA import InteligenciaArtificial as IA
 import numpy as np;
 from typing import List
 
@@ -12,18 +13,22 @@ class Reversi():
 	ESTADO_JUEGO:List[List[int]];
 	NUMERO_FILAS:int;
 	NUMERO_COLUMNAS:int;
+	INTELIGENCIA_ARTIFICIAL:IA;
 
 	#	Validaciones.
 	esta_completo:bool = False; #	No puede iniciar completo.
 
 
 	#	Constructor.
-	def __init__(self, numero_filas:int, numero_columnas:int) -> None:
+	def __init__(self, numero_filas:int, numero_columnas:int, nueva_IA:IA) -> None:
 		#	Definición del estado inicial del juego.
 		#	Tablero vacio.
 		self.NUMERO_FILAS = numero_filas;
 		self.NUMERO_COLUMNAS = numero_columnas;
 		self.ESTADO_JUEGO = np.zeros((numero_filas, numero_columnas));
+
+		#	Cargamos el objeto IA como una propiedad del juego.
+		self.INTELIGENCIA_ARTIFICIAL = nueva_IA;
 
 
 	#	Metodos.
@@ -47,29 +52,213 @@ class Reversi():
 		pass
 
 
-	def validacion_salto_blanca(self, coordenadas:List[int]) -> None:
+	def validacion_salto(self, coordenadas:List[int], ficha_base: int, ficha_objetivo:int) -> bool:
 		"""..."""
+
+		# Para saltos blanca: ficha_base: 1, ficha_objetivo: 2
+		# Para saltos negras: ficha_base: 2, ficha_objetivo: 1
 
 		#	Variables locales.
 		fila:int = coordenadas[0];
 		columna:int = coordenadas[1];
 		validaciones:List[bool];
+
+		#	Traemos el estado del juego (tablero).
 		estado_juego:List[List[int]] = self.GET_estado_juego();
+
+		#	Traemos la IA para que pueda interactuar con el tablero.
+		inteligencia:IA = self.GET_inteligencia_artificial();
+
 
 		#	Comprobación: La casilla seleccionada tiene adyacente.
 		if (self.validacion_es_adyacente([fila, columna])):
 			#	Busqueda: Ficha negra a la derecha.
 			columna_auxiliar:int = (columna + 1);
 
-			#	Comprobar que la casilla no este en un borde.
+			#	Comprobación: La casilla no esta en un borde.
 			if ((columna_auxiliar < 5) and (columna_auxiliar > 0)):
+
 				#	Identificar la casilla con ficha negra (2)
-				if estado_juego[fila][columna_auxiliar] == 2:
+				if (estado_juego[fila][columna_auxiliar] == ficha_objetivo):
 					for i in range((5 - columna_auxiliar)):
-						# Recordatorio: ... me quede aqui.
-						pass
 
+						#	Identificar que la casilla continua sea una ficha blanca (1)
+						if ((estado_juego[fila][(columna_auxiliar + i + 1)] == ficha_base)):
+							
+							#	Verificamos quien puede o no editar el tablero.
+							if not (inteligencia.GET_puede_generar_jugadas()):
+								#	Convertimos las fichas hacia las derechas a blancas.
+								self.convertir_fichas(fila, fila, columna_auxiliar, (columna_auxiliar + i + 1), "centro-derecha", ficha_base);
+							validaciones.append(True);
+				else:
+					validaciones.append(False);
+			else:
+				validaciones.append(False);
 
+			#	Busqueda: Ficha negra a la Izquierda.
+			columna_auxiliar = (columna - 1);
+
+			#	Comprobación: La casilla no esta en un borde.
+			if	((columna_auxiliar < 5) and (columna_auxiliar > 0)):
+
+				#	Identificar la casilla con ficha negra (2)
+				if	(estado_juego[fila][columna_auxiliar] == ficha_objetivo):
+					for i in range(columna_auxiliar):
+
+						#	Identificar que la casilla antecesoras sea una ficha blanca (1)
+						if	(estado_juego[fila][(columna_auxiliar - i - 1)] == ficha_base):
+							
+							#	Verificamos quien puede o no editar el tablero.
+							if not (inteligencia.GET_puede_generar_jugadas()):
+								self.convertir_fichas(fila, fila, columna_auxiliar, (columna_auxiliar - i - 1), "centro-izquierda", ficha_base);
+							validaciones.append(True);
+				else:
+					validaciones.append(False);
+			else:
+				validaciones.append(False);
+
+			#	Busqueda: Ficha negra a la abajo.
+			fila_auxiliar:int = (fila + 1);
+
+			#	Comprobación: La casilla no esta en un borde.
+			if ((fila_auxiliar < 5) and (fila_auxiliar > 0)):
+
+				#	Identificar la casilla con ficha negra (2)
+				if (estado_juego[fila_auxiliar][columna] == ficha_objetivo):
+					for i in range((5 - fila_auxiliar)):
+						
+						#	Identificar que la casilla sucesores sea una ficha blanca (1)
+						if (estado_juego[(fila_auxiliar + i + 1)][columna] == ficha_base):
+
+							#	Verificamos quien puede o no editar el tablero.
+							if not (inteligencia.GET_puede_generar_jugadas()):
+								self.convertir_fichas(fila, (fila_auxiliar + i + 1), columna, columna, "abajo", ficha_base);
+							validaciones.append(True);
+				else:
+					validaciones.append(False);
+			else:
+				validaciones.append(False);
+
+			#	Busqueda: Ficha negra a la arriba.
+			fila_auxiliar = (fila - 1);
+
+			#	Comprobación: La casilla no esta en un borde.
+			if ((fila_auxiliar < 5) and (fila_auxiliar > 0)):
+				#	Identificar la casilla con ficha negra (2)
+				if	(estado_juego[fila_auxiliar][columna] == ficha_objetivo):
+					for i in range(fila_auxiliar):
+						#	Identificar que la casilla sucesores sea una ficha blanca (1)
+						if (estado_juego[(fila_auxiliar - i - 1)][columna] == ficha_base):
+							#	Verificamos quien puede o no editar el tablero.
+							if not (inteligencia.GET_puede_generar_jugadas()):
+								self.convertir_fichas(fila, (fila_auxiliar - i - 1), columna, columna, "arriba", ficha_base);
+							validaciones.append(True);	
+				else:
+					validaciones.append(False);	
+			else:
+				validaciones.append(False);
+
+			#	Busqueda: Ficha negra a la arriba-derecha.
+			fila_auxiliar = (fila - 1);
+			columna_auxiliar = (columna + 1);
+			
+			#	Comprobación: La casilla no esta en un borde.
+			if (((fila_auxiliar < 5) and (fila_auxiliar > 0)) and ((columna_auxiliar < 5) and (columna_auxiliar > 0))):
+				par:list[int] = [fila_auxiliar, (5 - columna_auxiliar)];
+				rango = min(par);
+
+				#	Identificar la casilla con ficha negra (2)
+				if	(estado_juego[fila_auxiliar][columna_auxiliar] == ficha_objetivo):
+					for i in range(rango):
+						#	Identificar que la casilla sucesores sea una ficha blanca (1)
+						if (estado_juego[(fila_auxiliar - i - 1)][(columna_auxiliar + i + 1)] == ficha_base):
+							#	Verificamos quien puede o no editar el tablero.
+							if not (inteligencia.GET_puede_generar_jugadas()):
+								self.convertir_fichas(fila, (fila_auxiliar - i - 1), columna, (columna_auxiliar + i + 1), "arriba-derecha", ficha_base);
+							validaciones.append(True);	
+				else:
+					validaciones.append(False);	
+			else:
+				validaciones.append(False);
+
+			#	Busqueda: Ficha negra a la arriba-izquierda.
+			fila_auxiliar = (fila - 1);
+			columna_auxiliar = (columna - 1);
+
+			#	Comprobación: La casilla no esta en un borde.
+			if (((fila_auxiliar < 5) and (fila_auxiliar > 0)) and ((columna_auxiliar < 5) and (columna_auxiliar > 0))):
+				par = [fila_auxiliar, columna_auxiliar];
+				rango = min(par);
+
+				#	Identificar la casilla con ficha negra (2)
+				if	(estado_juego[fila_auxiliar][columna_auxiliar] == ficha_objetivo):
+					for i in range(rango):
+						#	Identificar que la casilla sucesores sea una ficha blanca (1)
+						if (estado_juego[(fila_auxiliar - i - 1)][(columna_auxiliar - i - 1)] == ficha_base):
+							#	Verificamos quien puede o no editar el tablero.
+							if not (inteligencia.GET_puede_generar_jugadas()):
+								self.convertir_fichas(fila, (fila_auxiliar - i - 1), columna, (columna_auxiliar - i - 1), "arriba-izquierda", ficha_base);
+							validaciones.append(True);	
+				else:
+					validaciones.append(False);	
+			else:
+				validaciones.append(False);
+
+			#	Busqueda: Ficha negra a la abajo-derecha.
+			fila_auxiliar = (fila + 1);
+			columna_auxiliar = (columna + 1);
+
+			#	Comprobación: La casilla no esta en un borde.
+			if (((fila_auxiliar < 5) and (fila_auxiliar > 0)) and ((columna_auxiliar < 5) and (columna_auxiliar > 0))):
+				par = [(5 - fila_auxiliar), (5 - columna_auxiliar)];
+				rango = min(par);
+
+				#	Identificar la casilla con ficha negra (2)
+				if	(estado_juego[fila_auxiliar][columna_auxiliar] == ficha_objetivo):
+					for i in range(rango):
+						#	Identificar que la casilla sucesores sea una ficha blanca (1)
+						if (estado_juego[(fila_auxiliar + i + 1)][(columna_auxiliar + i + 1)] == ficha_base):
+							#	Verificamos quien puede o no editar el tablero.
+							if not (inteligencia.GET_puede_generar_jugadas()):
+								self.convertir_fichas(fila, (fila_auxiliar + i + 1), columna, (columna_auxiliar + i + 1), "abajo-derecha", ficha_base);
+							validaciones.append(True);	
+				else:
+					validaciones.append(False);	
+			else:
+				validaciones.append(False);
+
+			#	Busqueda: Ficha negra a la abajo-izquierda.
+			fila_auxiliar = (fila + 1);
+			columna_auxiliar = (columna - 1);
+
+			#	Comprobación: La casilla no esta en un borde.
+			if (((fila_auxiliar < 5) and (fila_auxiliar > 0)) and ((columna_auxiliar < 5) and (columna_auxiliar > 0))):
+				par = [(5 - fila_auxiliar), columna_auxiliar];
+				rango = min(par);
+
+				#	Identificar la casilla con ficha negra (2)
+				if	(estado_juego[fila_auxiliar][columna_auxiliar] == ficha_objetivo):
+					for i in range(rango):
+						#	Identificar que la casilla sucesores sea una ficha blanca (1)
+						if (estado_juego[(fila_auxiliar + i + 1)][(columna_auxiliar - i - 1)] == ficha_base):
+							#	Verificamos quien puede o no editar el tablero.
+							if not (inteligencia.GET_puede_generar_jugadas()):
+								self.convertir_fichas(fila, (fila_auxiliar + i + 1), columna, (columna_auxiliar - i - 1), "abajo-izquierda", ficha_base);
+							validaciones.append(True);	
+				else:
+					validaciones.append(False);	
+			else:
+				validaciones.append(False);
+		
+			# Validaciones.
+			if True in validaciones:
+				return True;
+			else:
+				return False;
+
+		#	Retorno general.
+		else:
+			return False
 
 
 	def validacion_salto_negra(self):
@@ -315,14 +504,14 @@ class Reversi():
 				columna_inicio = (columna_inicio - 1);
 
 		#	Transformar fichas: Hacias la derecha.
-		elif (modo == "derecha"):
+		elif (modo == "centro-derecha"):
 			while(columna_inicio != columna_destino):
 				#	Configurando la ficha del tablero.
 				estado_juego[fila_inicio][columna_inicio] = color_ficha; 
 				columna_inicio = (columna_inicio + 1);
 			
 		#	Transformar fichas: Hacias la izquierda.
-		elif (modo == "izquierda"):
+		elif (modo == "centro-izquierda"):
 			while(columna_inicio != columna_destino):
 				#	Configurando la ficha del tablero.
 				estado_juego[fila_inicio][columna_inicio] = color_ficha;
@@ -381,6 +570,12 @@ class Reversi():
 	def GET_estado_juego(self) -> List[List[int]]:		
 		return self.ESTADO_JUEGO;
 
-	def SET_estado_juego(self, nuevo_estado) -> None:
+	def SET_estado_juego(self, nuevo_estado:List[List[int]]) -> None:
 		self.ESTADO_JUEGO = nuevo_estado;
 	
+	#		INTELIGENCIA ARTIFICIAL.
+	def GET_inteligencia_artificial(self) -> IA:
+		return self.INTELIGENCIA_ARTIFICIAL;
+
+	def SET_inteligencia_artificial(self, nueva_IA:IA) -> None:
+		self.INTELIGENCIA_ARTIFICIAL = nueva_IA;

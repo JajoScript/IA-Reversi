@@ -11,10 +11,11 @@ from IA import InteligenciaArtificial;
 #	Definición de funciones.
 def main() -> None:
 	#	Instanciación de la inteligencia artificial.
-	mi_IA = InteligenciaArtificial();
+	#	La verificación de jugadas comienza en False, para que la IA no altere el tablero, hasta que sea su turno.
+	mi_IA = InteligenciaArtificial(verificacion_jugadas=False);
 
 	#	Instanciación del juego Reversi.
-	mi_reversi = Reversi(numero_columnas=6, numero_filas=6);
+	mi_reversi = Reversi(numero_columnas=6, numero_filas=6, nueva_IA=mi_IA);
 	mi_reversi.crear_estado_inicial();
 
 	#	Ejecución de la interfaz grafica.

@@ -5,10 +5,11 @@
 #	-- Definición de clase. --
 class InteligenciaArtificial():
 	#	Propiedades.
-	
+	PUEDE_GENERAR_JUGADAS:bool;
+
 	#	Constructor.
-	def __init__(self) -> None:
-		pass
+	def __init__(self, verificacion_jugadas:bool) -> None:
+		self.PUEDE_GENERAR_JUGADAS = verificacion_jugadas;
 
 	#	Metodos.
 	def generador_juegadas_validas(self):
@@ -24,4 +25,8 @@ class InteligenciaArtificial():
 		pass
 
 	#	Getters & Setters.
-	pass
+	def GET_puede_generar_jugadas(self) -> bool:
+		return self.PUEDE_GENERAR_JUGADAS;
+
+	def SET_puede_generar_jugadas(self, nueva_configuracion) -> None:
+		self.PUEDE_GENERAR_JUGADAS = nueva_configuracion;
