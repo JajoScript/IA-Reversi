@@ -35,14 +35,6 @@ COLOR_TEXTO:tuple = (24, 27, 28);
 
 # Definición del estado inicial del juego.
 # Tablero vacio.
-"""ESTADO_JUEGO= [
-	[0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0],
-	[0, 0, 0, 0, 0, 0]];"""
-
 ESTADO_JUEGO=np.zeros((6,6))
 
 # [0] : Celda vacia.
