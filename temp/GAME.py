@@ -48,9 +48,92 @@ class Reversi():
 		self.SET_estado_juego(estado_inicial);
 
 
-	def validacion_fin_del_juego(self) -> None:
-		pass
+	def validacion_fin_del_juego(self, color_jugador:int) -> bool:
+		"""..."""
 
+
+		#	Traemos el estado del juego.
+		estado_juego:List[List[int]] = self.GET_estado_juego();
+		inteligencia:IA = self.GET_inteligencia_artificial();
+
+		#	Comprobamos si quedan celdas vacias.
+		if (0 not in estado_juego):
+			return False
+
+		#	Selección de jugadas segun el jugador (color ficha).
+		# 	Ficha Blanca.
+		if (color_jugador == 1):
+			# Generando las posibles jugadas.
+			jugadas_posibles = self.generador_jugadas_validas(color_jugador);
+
+		#	Ficha Negra.
+		elif (color_jugador == 2):
+			# Generando las posibles jugadas.
+			jugadas_posibles = self.generador_jugadas_validas(color_jugador);
+
+		#	Consultando si quedan jugadas validas en el tablero.
+		if len(jugadas_posibles) == 0:
+			return False;
+		else:
+			return True;
+	
+	def jugar(self, coordenadas:List[int], color_ficha:int) -> bool:
+		#	Traemos el estaod del juego.
+		estado_juego:List[List[int]] = self.GET_estado_juego();
+
+		#	Jugada para la ficha blanca.
+		if (color_ficha == 1):
+			if (self.validacion_esta_vacia(coordenadas) and self.validacion_es_adyacente(coordenadas) and self.validacion_salto(coordenadas, color_ficha, 2)):
+				estado_juego[coordenadas[0]][coordenadas[1]] = 1;
+				return True;
+			else:
+				return False;
+
+		elif(color_ficha == 2):
+			if (self.validacion_esta_vacia(coordenadas) and self.validacion_es_adyacente(coordenadas) and self.validacion_salto(coordenadas, color_ficha, 1)):
+				estado_juego[coordenadas[0]][coordenadas[1]] = 2;
+				return True;
+			else:
+				return False;
+		
+		#	Retorno general.
+		else:
+			return False;
+
+
+	def generador_jugadas_validas(self, ficha_jugador:int) -> List[List[int]]:
+		#	Habilitamos el generar jugadas.
+		inteligencia:IA = self.GET_inteligencia_artificial()
+		generador_jugadas:bool = inteligencia.GET_puede_generar_jugadas();
+		generador_jugadas = True;
+		inteligencia.SET_puede_generar_jugadas(generador_jugadas);
+
+		#	Creamos lista de jugadas posibles.
+		jugadas_posibles:List[List[int]] = [];
+
+		#	Generando jugadas dependiendo del jugador.
+		#	Ficha Blanca
+		if (ficha_jugador == 1): 
+			for fila in range(6):
+				for columna in range(6):
+					#	Comprobación celda vacia, Comprobación adyacente y Comprobación saltos.
+					if ((self.validacion_esta_vacia([fila, columna])) and (self.validacion_es_adyacente([fila, columna])) and (self.validacion_salto([fila, columna], ficha_jugador, 2))):
+						jugadas_posibles.append([fila, columna]);
+					
+		#	Ficha Negra.
+		elif (ficha_jugador == 2): 
+			for fila in range(6):
+				for columna in range(6):
+					#	Comprobación celda vacia, Comprobación adyacente y Comprobación saltos.
+					if ((self.validacion_esta_vacia([fila, columna])) and (self.validacion_es_adyacente([fila, columna])) and (self.validacion_salto([fila, columna], ficha_jugador, 1))):
+						jugadas_posibles.append([fila, columna]);
+
+		#	Deshabilitamos la generación de jugadas.
+		generador_jugadas = False;
+		inteligencia.SET_puede_generar_jugadas(generador_jugadas);
+
+		#	Retornamos la lista de jugadas posibles.
+		return jugadas_posibles;
 
 	def validacion_salto(self, coordenadas:List[int], ficha_base: int, ficha_objetivo:int) -> bool:
 		"""..."""
@@ -61,7 +144,7 @@ class Reversi():
 		#	Variables locales.
 		fila:int = coordenadas[0];
 		columna:int = coordenadas[1];
-		validaciones:List[bool];
+		validaciones:List[bool] = [];
 
 		#	Traemos el estado del juego (tablero).
 		estado_juego:List[List[int]] = self.GET_estado_juego();
@@ -259,12 +342,8 @@ class Reversi():
 		#	Retorno general.
 		else:
 			return False
-
-
-	def validacion_salto_negra(self):
-		pass
-
 	
+
 	def realizar_vistazos(self, tablero, indice_y, indice_x, modo) -> bool:
 		"""..."""
 

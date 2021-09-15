@@ -1,5 +1,7 @@
 #	-- Dependencias. --
+import copy
 from GAME import Reversi
+from IA import InteligenciaArtificial as IA
 import typing, sys, time, os;
 from typing import Any, List;
 import pygame;
@@ -266,6 +268,14 @@ class InterfazGrafica():
 		FPS = pygame.time.Clock();
 		FPS.tick(30);
 
+		#	Recordatorio: creo que esto no debe estar aqui.
+		#	Traemos el objeto juego.
+		partida:Reversi = self.GET_juego_reversi();
+		inteligencia:IA = partida.GET_inteligencia_artificial();
+
+		#	Le entregamos a la inteligencia el objeto de partida.
+		inteligencia.SET_partida(partida);
+
 		#	Ciclo para correr el juego.
 		while True:
 			#	Posicionando los recursos en la ventana.
@@ -287,13 +297,48 @@ class InterfazGrafica():
 				if evento.type == pygame.MOUSEBUTTONDOWN:
 					#	Capturando las coordenadas.
 					posicion_mouse:List[int] = pygame.mouse.get_pos();
-					print(f"[DEV] coordenadas: (x: {posicion_mouse[0]}, y: {posicion_mouse[1]})");
 
 					#	Gestionando coordenadas.
 					self.controlador_coordenadas(posicion_mouse);
 
+					indice_y:int = self.GET_coordenada_y();
+					indice_x:int = self.GET_coordenada_x();
+					print(f"[DEV] coordenadas: (x: {posicion_mouse[0]}, y: {posicion_mouse[1]})");
+					print(f"[DEV] coordenadas: (x: {indice_x}, y: {indice_y})");
+					print(partida.GET_estado_juego());
+
 					#	Ejecucion de la jugabilidad.
-					#	...
+					#	Comprobamos si termino el juego.
+					#	Le pasamos un 2 dado que el usuario juega con fichas negras, y es el usuario quien activa el evento.
+					if (partida.validacion_fin_del_juego(2)):
+						#	Comprobamos:
+						if	(partida.validacion_esta_vacia([indice_y, indice_x]) and partida.validacion_es_adyacente([indice_y, indice_x]) and partida.validacion_salto([indice_y, indice_x], 2, 1)):
+							#	Traemos el estado del juego.
+							estado_juego:List[List[int]] = partida.GET_estado_juego();
+							estado_juego[indice_y][indice_x] = 2;
+							
+							#	Guardamos el estado del juego.
+							partida.SET_estado_juego(estado_juego);
+							
+							#	Se crea una copia del tablero antes de la jugada del jugador blanco.
+							copia_estado_juego = copy.deepcopy(estado_juego);
+							
+							#	Turno del jugador Blanco.
+							if (partida.validacion_fin_del_juego(1)):
+								#	Configurando.
+								inteligencia.SET_profundidad(0);
+
+								resultado = inteligencia.algoritmo_minmax(copia_estado_juego, -1);
+								coordenada_blanca = resultado[1];
+								
+								#	Iniciar el juego.
+								partida.jugar(coordenada_blanca, 1)
+								
+
+							else:
+								print("[JUEGO TERMINADO][FICHA BLANCA]")		
+					else:
+						print("[JUEGO TERMINADO][FICHA NEGRA]")
 
 			#	Actualización de la ventana.
 			pygame.display.flip();
