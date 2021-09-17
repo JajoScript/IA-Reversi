@@ -13,15 +13,15 @@ class Juego():
 	def __init__(self, numero_filas:int, numero_columnas:int) -> None:
 		#	Creación del tablero.
 		self.estado_juego:Any= np.zeros((numero_filas, numero_columnas));
+		self.numero_filas = numero_filas;
+		self.numero_columnas = numero_columnas;
 
 	#	Metodos.
 	def definir_estado_inicial(self) -> None:
 		"""..."""
-
-		#	Traemos el tablero.
-		tablero = self.GET_estado_juego();
-
+		
 		#	Definiendo el estado inicial.
+		tablero:Any= np.zeros((self.numero_filas, self.numero_columnas));
 		tablero[2][2] = 1;
 		tablero[3][3] = 1;
 		tablero[2][3] = 2;
@@ -29,7 +29,7 @@ class Juego():
 
 		#	Guardamos la configuración inicial del tablero.
 		self.SET_estado_juego(tablero);
-
+		print("[DEV] se definio un nuevo estado inicial para la partida");
 		
 	def mostrar_tablero(self) -> None:
 		"""..."""

@@ -98,7 +98,7 @@ class Interfaz():
 		if (len(str(numero_fichas_negras)) == 1):
 			ventana.blit(texto_fichas_negras, dest=(182, 122));
 		else:
-			ventana.blit(texto_fichas_negras, dest=(174, 122));
+			ventana.blit(texto_fichas_negras, dest=(178, 122));
 
 
 	def renderizado_objetos(self, partida) -> None:
@@ -215,7 +215,15 @@ class Interfaz():
 	def activar_boton_nuevo_juego(self) -> None:
 		"""..."""
 		print("[DEV] Se pulso el boton de nuevo juego!");
-		pass
+
+		#	Traemos la instancia de la partida.
+		juego = self.GET_partida();
+		print(f"[DEV] juego 221: {juego}");
+		juego.definir_estado_inicial();
+
+		#	Definimos los turnos.
+		nuevos_turnos = [False, True]; # [0] ficha blanca. [0] Ficha Negra.
+		self.SET_turnos(nuevos_turnos)
 
 
 	def activar_boton_pista(self) -> None:
@@ -301,6 +309,10 @@ class Interfaz():
 	def controlador_ventana(self, partida) -> None:
 		"""..."""
 
+		#	Definimos como propiedad la partida.
+		print(f"[DEV] partida 309: {partida}")
+		self.SET_partida(partida);
+
 		#   Configuración de la ventana.
 		pygame.init();
 		pygame.font.init();
@@ -371,15 +383,22 @@ class Interfaz():
 						partida.SET_estado_juego(tablero);
 
 
-					#	Prueba de turnos.
-					turnos:List[bool] = self.GET_turnos()
-					nuevos_turnos = [not(turnos[0]), not(turnos[1])]
-					self.SET_turnos(nuevos_turnos);
+					# #	Prueba de turnos.
+					# turnos:List[bool] = self.GET_turnos()
+					# nuevos_turnos = [not(turnos[0]), not(turnos[1])]
+					# self.SET_turnos(nuevos_turnos);
 					
 
 
 	#	Getters & Setters.
-	#		NUMERO FICHAS
+	#		PARTIDA.
+	def GET_partida(self) -> Any:
+		return self.PARTIDA;
+
+	def SET_partida(self, nueva_partida) -> None:
+		self.PARTIDA = nueva_partida;
+
+	#		NUMERO FICHAS.
 	def GET_numero_fichas(self, color_ficha:int) -> int:
 		#	CASO: Ficha blanca.
 		if (color_ficha == 1):
