@@ -3,7 +3,8 @@
 import pygame;
 import os;
 import sys;
-from typing import Any, List;
+import webbrowser;
+from typing import Any, List, Tuple;
 
 #	Dependencias Internas.
 
@@ -40,26 +41,64 @@ class Interfaz():
 		ancho_celda:int = int((tamaño_tablero / 6));
 
 		#	Recorriendo el tablero, para renderizarlo.
-		posicion_y:int = 220;
+		posicion_y:float = 220;
 		for fila in tablero:
-			posicion_x:int = 80;
+			posicion_x:float = 80;
 			for elemento in fila:
 				#	Caso: Ficha blanca.
 				if (elemento == 1):
 					ficha = self.GET_ficha(elemento);
 					ventana.blit(ficha, ((posicion_x + 7), (posicion_y + 9)));
-					
+				
+				#	Caso: Ficha negra	.
 				elif (elemento == 2):
 					ficha = self.GET_ficha(elemento);
 					ventana.blit(ficha, ((posicion_x + 7), (posicion_y + 9)));
 
 				elif (elemento == 0):
 					pass
+
 				else:
 					print("[DEV][renderizar_fichas][ERROR] elemento no conocido en el tablero.");
 
-				posicion_x += ancho_celda;
-			posicion_y += alto_celda;
+				posicion_x += ancho_celda + 0.5;
+			posicion_y += alto_celda + 0.5;
+
+
+	def renderizar_texto(self, ventana):
+		"""..."""
+		
+		#	Traemos los valores de las fichas.
+		numero_fichas_blancas:int = self.GET_numero_fichas(1);
+		numero_fichas_negras:int = self.GET_numero_fichas(2);
+		turnos:List[bool] = self.GET_turnos(); # 0, blanca, 1, negra.
+
+		fuente_juego = self.GET_fuente();
+		texto_fichas_blancas = pygame.font.Font.render(fuente_juego, str(numero_fichas_blancas), True, (24, 27, 28));
+		texto_fichas_negras = pygame.font.Font.render(fuente_juego, str(numero_fichas_negras), True, (24, 27, 28));
+		texto_turno_blanca = pygame.font.Font.render(fuente_juego, "Turno: Ficha blanca", True, (24, 27, 28));
+		texto_turno_negra = pygame.font.Font.render(fuente_juego, "Turno: Ficha negra", True, (24, 27, 28));
+
+		#	Renderizado del texto.
+		#	TURNO: ficha blanca.
+		if (turnos[0]):
+			ventana.blit(texto_turno_blanca, dest=(220, 668));
+
+		#	TURNO: ficha negra.
+		elif (turnos[1]):
+			ventana.blit(texto_turno_negra, dest=(220, 668));
+
+		#	Posicionamiento fichas blancas.
+		if (len(str(numero_fichas_blancas)) == 1):
+			ventana.blit(texto_fichas_blancas, dest=(86, 122));
+		else:
+			ventana.blit(texto_fichas_blancas, dest=(79, 122));
+		
+		#	Posicionamiento fichas blancas.
+		if (len(str(numero_fichas_negras)) == 1):
+			ventana.blit(texto_fichas_negras, dest=(182, 122));
+		else:
+			ventana.blit(texto_fichas_negras, dest=(174, 122));
 
 
 	def renderizado_objetos(self, partida) -> None:
@@ -71,6 +110,9 @@ class Interfaz():
 		#	Cargando los objetos que deben renderizarse.
 		ventana.blit(self.GET_background(), (0,0));
 		
+		#	Renderizar texto
+		self.renderizar_texto(ventana);
+
 		#	Renderizado de fichas del tablero.
 		self.renderizar_fichas(partida);
 
@@ -103,7 +145,8 @@ class Interfaz():
 			print("[DEV][ERROR] Error al cargar el assets, no hay tipo definido.");
 			return None;
 
-	def controlador_coordenadas_tablero(self, coordenadas:List[int]) -> List[int]:
+
+	def controlador_coordenadas_tablero(self, coordenadas:Tuple[int, int]) -> Tuple[int, int]:
 		"""..."""
 
 		#	Coordenadas.
@@ -127,7 +170,7 @@ class Interfaz():
 			indice_y = 5;
 		else:
 			print("[DEV][ERROR] Error al momento de determinar la coordenada del tablero en el eje Y.");
-			return [-1, -1];
+			return (-1, -1);
 		
 		#	Determinación coordenadas EJE X.
 		if (coordenada_x in range(80, 148)):
@@ -144,9 +187,9 @@ class Interfaz():
 			indice_x = 5;
 		else:
 			print("[DEV][ERROR] Error al momento de determinar la coordenada del tablero en el eje X.");
-			return [-1, -1];
+			return (-1, -1);
 
-		return [indice_x, indice_y];
+		return (indice_x, indice_y);
 
 
 	def activar_boton_dificultad(self, dificultad:str) -> None:
@@ -168,6 +211,7 @@ class Interfaz():
 		else:
 			print("[DEV][activar_boton_dificultad][ERROR] no esta definido el boton seleccionado.");
 
+
 	def activar_boton_nuevo_juego(self) -> None:
 		"""..."""
 		print("[DEV] Se pulso el boton de nuevo juego!");
@@ -179,8 +223,12 @@ class Interfaz():
 		print("[DEV] Se pulso el boton de pista!");
 		pass
 
+	def activar_boton_repositorio(self) -> None:
+		"""..."""
+		print("[DEV] abriendo el repositorio en el navegador...")
+		webbrowser.open("https://github.com/JajoScript/IA-Reversi", new=2, autoraise=True);
 
-	def controlador_coordenadas(self, coordenadas:List[int]) -> List[int]:
+	def controlador_coordenadas(self, coordenadas:Tuple[int, int]) -> Tuple[int, int]:
 		"""..."""
 
 		#	Coordenadas.
@@ -207,9 +255,14 @@ class Interfaz():
 		elif (coordenada_x in range(242, 392) and coordenada_y in range(76, 106)):
 			self.activar_boton_nuevo_juego();
 
+		#	Boton: 'repositorio'.
+		elif (coordenada_x in range(546, 582) and coordenada_y in range(640, 670)):
+			self.activar_boton_repositorio();
+
+
 		#	Boton: 'TABLERO'.
 		elif (coordenada_x in range(78, 520) and coordenada_y in range(222, 660)):
-			tablero_coordenadas:List[int] = self.controlador_coordenadas_tablero(coordenadas);
+			tablero_coordenadas:Tuple[int, int] = self.controlador_coordenadas_tablero(coordenadas);
 			print("[DEV][EVENTO] Se pulso el tablero.");
 			print(tablero_coordenadas)
 			return tablero_coordenadas;
@@ -219,7 +272,30 @@ class Interfaz():
 			print("[DEV][ERROR][controlador_coordenadas] Indeterminación a la hora de conocer donde pulso.");
 
 		#	Retorno general.
-		return [-1, -1]
+		return (-1, -1)
+
+
+	def contador_fichas(self, partida) -> None:
+		"""..."""
+
+		#	Traemos el tablero de la instancia de partida.
+		tablero = partida.GET_estado_juego();
+
+		#	Variables inciales. 
+		numero_fichas_blancas:int = 0;
+		numero_fichas_negras:int = 0;
+
+		#	Ciclo para recorrer el tablero y conar cada uno de sus elementos.
+		for fila in tablero:
+			for elemento in fila:
+				if (elemento == 1):
+					numero_fichas_blancas += 1;
+				elif (elemento == 2):
+					numero_fichas_negras += 1;
+
+		#	Guardando los valores de las fichas.
+		self.SET_numero_fichas(1, numero_fichas_blancas);
+		self.SET_numero_fichas(2, numero_fichas_negras);
 
 
 	def controlador_ventana(self, partida) -> None:
@@ -254,8 +330,11 @@ class Interfaz():
 		FPS = pygame.time.Clock();
 		FPS.tick(30);
 
-		#   Ciclo de ejecución.
+		#	Ciclo de ejecución.
 		while True:
+			#	Contador de fichas.
+			self.contador_fichas(partida);
+
 			#   Renderizando los elementos en pantalla.
 			self.renderizado_objetos(partida);
 
@@ -268,14 +347,16 @@ class Interfaz():
 				#	EVENTO: se pulsa el click.
 				if evento.type == pygame.MOUSEBUTTONDOWN:
 					#	Capturando la posición del mouse.
-					posicion_mouse:List[int] = pygame.mouse.get_pos();
+					posicion_mouse:Tuple[int, int] = pygame.mouse.get_pos();
+					print(f"[DEV] Mouse click (x: {posicion_mouse[0]}, y: {posicion_mouse[1]})")
 
 					#	Implementación de la jugabilidad.
-					coordenadas:List[int] = self.controlador_coordenadas(posicion_mouse);
+					coordenadas:Tuple[int, int] = self.controlador_coordenadas(posicion_mouse);
 
 					#	CASO: No es valido pasarle las coordenadas al juego.
 					if ((coordenadas[0] == -1) or (coordenadas[1] == -1)):
-						print("[DEV][ERROR] Hubo un problema al momento de capturar las coordenadas.");
+						print("[DEV] Se pulso fuera del tablero.");
+						
 					elif ((coordenadas[0] != -1) or (coordenadas[1] != -1)):
 						#	Posiciones del tablero.
 						indice_y:int = coordenadas[1];
@@ -285,8 +366,42 @@ class Interfaz():
 
 						#	Insertar jugabilidad aqui...
 
+					#	Prueba de turnos.
+					turnos:List[bool] = self.GET_turnos()
+					nuevos_turnos = [not(turnos[0]), not(turnos[1])]
+					self.SET_turnos(nuevos_turnos);
+					
+
 
 	#	Getters & Setters.
+	#		NUMERO FICHAS
+	def GET_numero_fichas(self, color_ficha:int) -> int:
+		#	CASO: Ficha blanca.
+		if (color_ficha == 1):
+			return self.NUMERO_BLANCAS;
+
+		#	CASO: Ficha negra.
+		elif (color_ficha == 2):
+			return self.NUMERO_NEGRAS;
+
+		#	CASO: Error.
+		else:
+			print("[DEV][get_numero_fichas] Error al retornar el valor de fichas.");
+			return 0;
+
+	def SET_numero_fichas(self, color_ficha:int, numero_ficha:int) -> None:
+		#	CASO: Ficha blanca.
+		if (color_ficha == 1):
+			self.NUMERO_BLANCAS = numero_ficha;
+
+		#	CASO: Ficha negra.
+		elif (color_ficha == 2):
+			self.NUMERO_NEGRAS = numero_ficha;
+
+		#	CASO: Error.
+		else:
+			print("[DEV][set_fichas] Error al cargar el numero de fichas.");
+
 	#		TURNOS.
 	def GET_turnos(self) -> List[bool]:
 		return self.TURNOS;
