@@ -104,11 +104,20 @@ class Interfaz():
 	def renderizado_objetos(self, partida) -> None:
 		"""..."""
 
-		#   Trayendo la instancia de ventana.
+		#	Trayendo la instancia de ventana.
 		ventana = self.GET_ventana();
 
+		#	Trayendo los estados de dificultad
+		dificultad = self.GET_estado_dificultad();
+		if (dificultad[0]):
+			ventana.blit(self.GET_dificultad(1), (0,0));
+		elif(dificultad[1]):
+			ventana.blit(self.GET_dificultad(2), (0,0));
+		elif(dificultad[2]):	
+			ventana.blit(self.GET_dificultad(3), (0,0));
+		
 		#	Cargando los objetos que deben renderizarse.
-		ventana.blit(self.GET_background(), (0,0));
+		# ventana.blit(self.GET_background(), (0,0));
 		
 		#	Renderizar texto
 		self.renderizar_texto(ventana);
@@ -198,14 +207,35 @@ class Interfaz():
 		#	Determinando funcionalidad dependiendo de la dificultad.
 		if (dificultad == "FACIL"):
 			print("[DEV][EVENTO] Se pulso el boton FACIL");
+			#	Reincio del tablero.
+			self.activar_boton_nuevo_juego();
+
+			#	Definiendo los estados.
+			estado_dificultad = [True, False, False]
+			self.SET_estado_dificultad(estado_dificultad);
+
 			#	Agregar funcionalidad...
 
 		elif (dificultad == "MEDIO"):
 			print("[DEV][EVENTO] Se pulso el boton MEDIO");
+			#	Reincio del tablero.
+			self.activar_boton_nuevo_juego();
+
+			#	Definiendo los estados.
+			estado_dificultad = [False, True, False]
+			self.SET_estado_dificultad(estado_dificultad);
+
 			#	Agregar funcionalidad...
 
 		elif (dificultad == "DIFICIL"):
 			print("[DEV][EVENTO] Se pulso el boton DIFICIL");
+			#	Reincio del tablero.
+			self.activar_boton_nuevo_juego();
+			
+			#	Definiendo los estados.
+			estado_dificultad = [False, False, True]
+			self.SET_estado_dificultad(estado_dificultad);
+
 			#	Agregar funcionalidad...
 
 		else:
@@ -313,6 +343,10 @@ class Interfaz():
 		print(f"[DEV] partida 309: {partida}")
 		self.SET_partida(partida);
 
+		#	Definimos un estado inicial para la dificultad.
+		#	Esta configuración es para que al comenzar el juego, la IA este definida como Facil.
+		self.SET_estado_dificultad([True, False, False]);
+
 		#   Configuración de la ventana.
 		pygame.init();
 		pygame.font.init();
@@ -326,8 +360,15 @@ class Interfaz():
 		pygame.display.set_icon(icono);
 
 		#	Cargando recursos del juego.
-		fondo_juego:Any = self.cargador_assets("img", "background.jpg", es_png=False);
-		self.SET_background(fondo_juego);
+		modo_facil:Any = self.cargador_assets("img", "background-facil.jpg", es_png=False);
+		self.SET_dificultad(1, modo_facil);
+		modo_medio:Any = self.cargador_assets("img", "background-medio.jpg", es_png=False);
+		self.SET_dificultad(2, modo_medio);
+		modo_dificil:Any = self.cargador_assets("img", "background-dificil.jpg", es_png=False);
+		self.SET_dificultad(3, modo_dificil);
+
+		# fondo_juego:Any = self.cargador_assets("img", "background.jpg", es_png=False);
+		# self.SET_background(fondo_juego);
 
 		ficha_blanca:Any = self.cargador_assets("img", "ficha_j2.png", es_png=True);
 		self.SET_ficha(1, ficha_blanca);
@@ -378,7 +419,7 @@ class Interfaz():
 
 						#	Insertar jugabilidad aqui...
 						tablero = partida.GET_estado_juego();
-						tablero[indice_y][indice_x] = 2;
+						tablero[indice_y][indice_x] = 1;
 
 						partida.SET_estado_juego(tablero);
 
@@ -391,6 +432,46 @@ class Interfaz():
 
 
 	#	Getters & Setters.
+	#		LISTA DIFICULTAD
+	def GET_estado_dificultad(self) -> List[bool]:
+		return self.ESTADO_DIFICULTAD;
+
+	def SET_estado_dificultad(self, nuevo_estado:List[bool]) -> List[bool]:
+		self.ESTADO_DIFICULTAD = nuevo_estado;
+
+	#		MODO DIFICULTAD
+	def GET_dificultad(self, nivel:str) -> Any:
+		#	Modo: Facil.
+		if(nivel == 1):
+			return self.MODO_FACIL;
+
+		#	Modo: Medio.
+		elif (nivel == 2):
+			return self.MODO_MEDIO;
+		
+		#	Modo: Dificil.
+		elif (nivel == 3):
+			return self.MODO_DIFICIL;
+
+		else:
+			print("[DEV][ERROR][GET_dificultad] No se encuentra el nivel especificado.");
+
+	def SET_dificultad(self, nivel:str, recurso:Any) -> None:
+		#	Modo: Facil.
+		if(nivel == 1):
+			self.MODO_FACIL = recurso;
+
+		#	Modo: Medio.
+		elif (nivel == 2):
+			self.MODO_MEDIO = recurso;
+		
+		#	Modo: Dificil.
+		elif (nivel == 3):
+			self.MODO_DIFICIL = recurso;
+
+		else:
+			print("[DEV][ERROR][SET_dificultad] No se encuentra el nivel especificado.");
+
 	#		PARTIDA.
 	def GET_partida(self) -> Any:
 		return self.PARTIDA;
