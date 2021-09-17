@@ -17,7 +17,7 @@ class Controlador():
 		#	Instancias de clases.
 		self.mi_inteligencia = Inteligencia();
 		self.mi_juego = Juego(numero_filas=6, numero_columnas=6);
-		self.mi_interfaz = Interfaz("final");
+		self.mi_interfaz = Interfaz(DIR="final");
 
 
 	#	Metodos.
@@ -36,6 +36,12 @@ class Controlador():
 		Reversi:Juego = self.GET_juego();
 		Grafica:Interfaz = self.GET_interfaz();
 
+		#	Definimos el estado inicial del tablero.
+		Reversi.definir_estado_inicial();
+
+		#	Montando la interfaz grafica.
+		self.log("Iniciando la interfaz grafica");
+		Grafica.controlador_ventana(partida=Reversi);
 
 	#	Getters & Setters.
 	#		INTELIGENCIA.

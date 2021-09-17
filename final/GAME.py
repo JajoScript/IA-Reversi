@@ -15,6 +15,22 @@ class Juego():
 		self.estado_juego:Any= np.zeros((numero_filas, numero_columnas));
 
 	#	Metodos.
+	def definir_estado_inicial(self) -> None:
+		"""..."""
+
+		#	Traemos el tablero.
+		tablero = self.GET_estado_juego();
+
+		#	Definiendo el estado inicial.
+		tablero[2][2] = 1;
+		tablero[3][3] = 1;
+		tablero[2][3] = 2;
+		tablero[3][2] = 2;
+
+		#	Guardamos la configuración inicial del tablero.
+		self.SET_estado_juego(tablero);
+
+		
 	def mostrar_tablero(self) -> None:
 		"""..."""
 
