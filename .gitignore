@@ -8,9 +8,12 @@ jspm_packages/
 # Entorno de trabajo con python.
 env/
 
-# Cache python
+# Cache python.
 */__pycache__/
 __pycache__/
+
+# Error control Python.
+.mypy_cache/
 
 # Editor de codigo.
 .DS_Store
