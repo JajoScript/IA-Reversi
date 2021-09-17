@@ -1,58 +1,60 @@
 #	-- Dependencias.
 #	Dependencias externas.
+import time;
+from typing import Any;
 
 #	Dependencias Internas.
 from GUI import Interfaz;
 from GAME import Juego;
 from IA import Inteligencia;
 
-#   -- Clases.
+#	-- Clases.
 #	Definición de la clase.
 class Controlador():
-    #   Propiedades.
-    
-    #   Constructor.
-    def __init__(self) -> None:
-
-        #   Instancias de clases.
-        self.mi_inteligencia = Inteligencia();
-        self.mi_juego = Juego();
-        self.mi_interfaz = Interfaz();
+	#	Propiedades.
+	#	Constructor.
+	def __init__(self) -> None:
+		#	Instancias de clases.
+		self.mi_inteligencia = Inteligencia();
+		self.mi_juego = Juego(numero_filas=6, numero_columnas=6);
+		self.mi_interfaz = Interfaz("final");
 
 
-    #   Metodos.
-    def iniciar_procesos(self) -> None:
-        #   Importando las instancias de cada clase.
-        IA = self.GET_inteligencia();
-        Reversi = self.GET_juego();
-        Grafica = self.GET_interfaz();
+	#	Metodos.
+	def log(self, mensaje:Any) -> None:
+		"""..."""
+
+		tiempo:Any = time.localtime();
+		print(f"[{tiempo.tm_hour}:{tiempo.tm_min}:{tiempo.tm_sec}][DEV] {mensaje}");
 
 
-        print(f"[DEV] IA: {IA}");
-        print(f"[DEV] Reversi: {Reversi}");
-        print(f"[DEV] Grafica: {Grafica}");
+	def iniciar_procesos(self) -> None:
+		"""..."""
 
-    #   Getters & Setters.
-    #       INTELIGENCIA.
-    def GET_inteligencia(self) -> Inteligencia:
-        return self.mi_inteligencia;
-    
-    def SET_inteligencia(self, nueva_IA) -> None:
-        self.mi_inteligencia = nueva_IA;
+		#	Importando las instancias de cada clase.
+		IA:Inteligencia = self.GET_inteligencia();
+		Reversi:Juego = self.GET_juego();
+		Grafica:Interfaz = self.GET_interfaz();
 
-    #       JUEGO.
-    def GET_juego(self) -> Juego:
-        return self.mi_juego;
-    
-    def SET_juego(self, nueva_partida) -> None:
-        self.mi_juego = nueva_partida;
 
-    #       INTERFAZ.
-    def GET_interfaz(self) -> Interfaz:
-        return self.mi_interfaz;
+	#	Getters & Setters.
+	#		INTELIGENCIA.
+	def GET_inteligencia(self) -> Inteligencia:
+		return self.mi_inteligencia;
+	 
+	def SET_inteligencia(self, nueva_IA) -> None:
+		self.mi_inteligencia = nueva_IA;
 
-    def SET_interfaz(self, nueva_GUI) -> None:
-        self.mi_interfaz = nueva_GUI;
+	#		JUEGO.
+	def GET_juego(self) -> Juego:
+		return self.mi_juego;
+	 
+	def SET_juego(self, nueva_partida) -> None:
+		self.mi_juego = nueva_partida;
 
-    
-    
+	#		INTERFAZ.
+	def GET_interfaz(self) -> Interfaz:
+		return self.mi_interfaz;
+
+	def SET_interfaz(self, nueva_GUI) -> None:
+		self.mi_interfaz = nueva_GUI;

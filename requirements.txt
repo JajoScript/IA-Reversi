@@ -1,2 +1,4 @@
-pygame
-numpy
+pygame==2.0.1
+numpy==1.21.2
+mypy==0.910
+lxml==4.6.3

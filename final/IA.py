@@ -2,13 +2,13 @@
 #	Dependencias externas.
 #	Dependencias Internas.
 
-#   -- Clases.
+#	-- Clases.
 #	Definición de la clase.
 class Inteligencia():
-    #   Propiedades.
-    #   Constructor.
-    def __init__(self) -> None:
-        pass
+	#	Propiedades.
+	#	Constructor.
+	def __init__(self) -> None:
+		pass
 
-    #   Metodos.
-    #   Getters & Setters.
+	#	Metodos.
+	#	Getters & Setters.

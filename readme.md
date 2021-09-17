@@ -4,6 +4,11 @@
 ## Introducción y buenas practicas
 
 ---
+## Buenas practicas
+Se definio como un estandar progamar utilizando la tabulación para la indentación, con un tamaño de 3 espacios.
+Por otro lado, se usa el paradigma de programación orientada a objeto en el desarrollo de todo el trabajo.
+
+---
 ## Dependencias
 Para funcionalidad y control de tipado es necesaria una versión de python 
 
@@ -15,41 +20,42 @@ Para funcionalidad y control de tipado es necesaria una versión de python
 
 Generación de un entorno de desarrollo con python
 ```bash
-   $py -m venv <name>
+	$py -m venv env/
 ```
 
 ### Verificación de archivos
 
 ```bash
-   $mypy src/main.py
+	$mypy --config-file .mypy.ini <dir>
+	$mypy --config-file .mypy.ini <dir> --html-report <dir>\__test__
 ```
 
 
 ## Aquitectura del directorio.
 
 ```py
-   __init__.py
-   # Archivo destinado a estructurar el directorio src como un paquete.
+	__init__.py
+	# Archivo destinado a estructurar el directorio src como un paquete.
 ```
 
 ```py
-   __main__.py
-   # Archivo destinado a la ejecución de todo el sistema.
+	__main__.py
+	# Archivo destinado a la ejecución de todo el sistema.
 ```
 
 ```py
-   GUI.py
-   # Archivo destinado a la implementación de la interfaz grafica del usuario.
+	GUI.py
+	# Archivo destinado a la implementación de la interfaz grafica del usuario.
 ```
 
 ```py
-   IA.py
-   # Archivo destinado al desarrollo de la Inteligencia artificial.
+	IA.py
+	# Archivo destinado al desarrollo de la Inteligencia artificial.
 ```
 
 ```py
-   GAME.py
-   # Archivo destinado a la jugabilidad del programa.
+	GAME.py
+	# Archivo destinado a la jugabilidad del programa.
 ```
 
 ---
@@ -57,18 +63,18 @@ Generación de un entorno de desarrollo con python
 
 Clonar el repositorio:
 ```bash
-   $git clone https://github.com/JajoScript/IA-Reversi.git
-   $git clone git@github.com:JajoScript/IA-Reversi.git
+	$git clone https://github.com/JajoScript/IA-Reversi.git
+	$git clone git@github.com:JajoScript/IA-Reversi.git
 ```
 
 Instalar las dependencias (recuerda crear antes un entorno de desarrollo):
 ```bash
-   $py pip install -r requirements.txt
+	$py pip install -r requirements.txt
 ```
 
 Iniciar la ejecución:
 ```bash
-   $py src/
+	$py src/
 ```
 
 ---
@@ -78,13 +84,13 @@ Apartado con el fin de entregar contexto a las funcionalidades de cada una de la
 ### Objetos
 ```python
 class test():
-   """ ... """
+	""" ... """
 ```
 
 ### Funciones
 ```python
 def test() -> None:
-   """ ... """
+	""" ... """
 ```
 *  Uso:
 *  Parametros:
@@ -92,7 +98,7 @@ def test() -> None:
 
 ```python
 def mostrarVentana() -> None:
-   """ ... """
+	""" ... """
 ```
 *  Uso: Función utilizada para crear/renderizar la ventana del juego.
 *  Parametros: Ninguno.

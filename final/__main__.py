@@ -4,14 +4,14 @@
 #	Dependencias internas.
 from CONTROLLER import Controlador;
 
-#   -- Funciones.
-#   Definición de funciones.
+#	-- Funciones.
+#	Definición de funciones.
 def main() -> None:
-    #   Instancia de la clase.
-    mi_controlador = Controlador();
-    mi_controlador.iniciar_procesos();
+	#	Instancia de la clase.
+	mi_controlador = Controlador();
+	mi_controlador.iniciar_procesos();
 
-#   Inicio de ejecuciones.
+#	Inicio de ejecuciones.
 if __name__ == "__main__":
-    #   Call inicial.
-    main();
+	#	Call inicial.
+	main();
