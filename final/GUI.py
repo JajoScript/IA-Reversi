@@ -356,7 +356,7 @@ class Interfaz():
 					#	CASO: No es valido pasarle las coordenadas al juego.
 					if ((coordenadas[0] == -1) or (coordenadas[1] == -1)):
 						print("[DEV] Se pulso fuera del tablero.");
-						
+
 					elif ((coordenadas[0] != -1) or (coordenadas[1] != -1)):
 						#	Posiciones del tablero.
 						indice_y:int = coordenadas[1];
@@ -365,6 +365,11 @@ class Interfaz():
 						print(f"[DEV y: {indice_y}, x: {indice_x}");
 
 						#	Insertar jugabilidad aqui...
+						tablero = partida.GET_estado_juego();
+						tablero[indice_y][indice_x] = 2;
+
+						partida.SET_estado_juego(tablero);
+
 
 					#	Prueba de turnos.
 					turnos:List[bool] = self.GET_turnos()
