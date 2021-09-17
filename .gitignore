@@ -8,6 +8,10 @@ jspm_packages/
 # Entorno de trabajo con python.
 env/
 
+# Cache python
+*/__pycache__/
+__pycache__/
+
 # Editor de codigo.
 .DS_Store
 .vscode
