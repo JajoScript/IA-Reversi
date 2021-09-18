@@ -73,6 +73,7 @@
 <span id="L63" class="lineno"><a class="lineno" href="#L63">63</a></span>
 <span id="L64" class="lineno"><a class="lineno" href="#L64">64</a></span>
 <span id="L65" class="lineno"><a class="lineno" href="#L65">65</a></span>
+<span id="L66" class="lineno"><a class="lineno" href="#L66">66</a></span>
 </pre></td>
 <td class="table-code"><pre><span class="line-empty" title="No Anys on this line!">#	-- Dependencias.</span>
 <span class="line-empty" title="No Anys on this line!">#	Dependencias externas.</span>
@@ -84,85 +85,89 @@
 <span class="line-any" title="No Anys on this line!">from GAME import Juego;</span>
 <span class="line-any" title="No Anys on this line!">from IA import Inteligencia;</span>
 <span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-empty" title="No Anys on this line!">#   -- Clases.</span>
+<span class="line-empty" title="No Anys on this line!">#	-- Clases.</span>
 <span class="line-empty" title="No Anys on this line!">#	Definición de la clase.</span>
 <span class="line-precise" title="No Anys on this line!">class Controlador():</span>
-<span class="line-empty" title="No Anys on this line!">    #   Propiedades.</span>
-<span class="line-empty" title="No Anys on this line!">    </span>
-<span class="line-empty" title="No Anys on this line!">    #   Constructor.</span>
-<span class="line-precise" title="No Anys on this line!">    def __init__(self) -&gt; None:</span>
-<span class="line-empty" title="No Anys on this line!">        #   Instancias de clases.</span>
+<span class="line-empty" title="No Anys on this line!">	#	Propiedades.</span>
+<span class="line-empty" title="No Anys on this line!">	#	Constructor.</span>
+<span class="line-precise" title="No Anys on this line!">	def __init__(self) -&gt; None:</span>
+<span class="line-empty" title="No Anys on this line!">		#	Instancias de clases.</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x3)">        self.mi_inteligencia = Inteligencia();</span>
+Unimported (x3)">		self.mi_inteligencia = Inteligencia();</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x3)">        self.mi_juego = Juego(numero_filas=6, numero_columnas=6);</span>
+Unimported (x3)">		self.mi_juego = Juego(numero_filas=6, numero_columnas=6);</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x3)">        self.mi_interfaz = Interfaz();</span>
+Unimported (x3)">		self.mi_interfaz = Interfaz(DIR="final");</span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-empty" title="No Anys on this line!">    #   Metodos.</span>
+<span class="line-empty" title="No Anys on this line!">	#	Metodos.</span>
 <span class="line-any" title="Any Types on this line: 
-Explicit (x1)">    def log(self, mensaje:Any) -&gt; None:</span>
-<span class="line-empty" title="No Anys on this line!">        """..."""</span>
-<span class="line-empty" title="No Anys on this line!">        </span>
+Explicit (x1)">	def log(self, mensaje:Any) -&gt; None:</span>
+<span class="line-empty" title="No Anys on this line!">		"""..."""</span>
+<span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-any" title="Any Types on this line: 
-Explicit (x2)">        tiempo:Any = time.localtime();</span>
+Explicit (x2)">		tiempo:Any = time.localtime();</span>
 <span class="line-any" title="Any Types on this line: 
-Explicit (x7)">        print(f"[{tiempo.tm_hour}:{tiempo.tm_min}:{tiempo.tm_sec}][DEV] {mensaje}");</span>
+Explicit (x7)">		print(f"[{tiempo.tm_hour}:{tiempo.tm_min}:{tiempo.tm_sec}][DEV] {mensaje}");</span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-precise" title="No Anys on this line!">    def iniciar_procesos(self) -&gt; None:</span>
-<span class="line-empty" title="No Anys on this line!">        """..."""</span>
+<span class="line-precise" title="No Anys on this line!">	def iniciar_procesos(self) -&gt; None:</span>
+<span class="line-empty" title="No Anys on this line!">		"""..."""</span>
 <span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-empty" title="No Anys on this line!">        #   Importando las instancias de cada clase.</span>
+<span class="line-empty" title="No Anys on this line!">		#	Importando las instancias de cada clase.</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x4)">        IA:Inteligencia = self.GET_inteligencia();</span>
+Unimported (x4)">		IA:Inteligencia = self.GET_inteligencia();</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x4)">        Reversi:Juego = self.GET_juego();</span>
+Unimported (x4)">		Reversi:Juego = self.GET_juego();</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x4)">        Grafica:Interfaz = self.GET_interfaz();</span>
+Unimported (x4)">		Grafica:Interfaz = self.GET_interfaz();</span>
 <span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">		#	Definimos el estado inicial del tablero.</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x3)">		Reversi.definir_estado_inicial();</span>
 <span class="line-empty" title="No Anys on this line!"></span>
+<span class="line-empty" title="No Anys on this line!">		#	Montando la interfaz grafica.</span>
+<span class="line-any" title="Any Types on this line: 
+Explicit (x1)">		self.log("Iniciando la interfaz grafica");</span>
+<span class="line-any" title="Any Types on this line: 
+Unimported (x4)">		Grafica.controlador_ventana(partida=Reversi);</span>
 <span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-empty" title="No Anys on this line!">    #   Getters &amp; Setters.</span>
-<span class="line-empty" title="No Anys on this line!">    #       INTELIGENCIA.</span>
+<span class="line-empty" title="No Anys on this line!">	#	Getters &amp; Setters.</span>
+<span class="line-empty" title="No Anys on this line!">	#		INTELIGENCIA.</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x1)">    def GET_inteligencia(self) -&gt; Inteligencia:</span>
+Unimported (x1)">	def GET_inteligencia(self) -&gt; Inteligencia:</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x1)">        return self.mi_inteligencia;</span>
-<span class="line-empty" title="No Anys on this line!">    </span>
+Unimported (x1)">		return self.mi_inteligencia;</span>
+<span class="line-empty" title="No Anys on this line!">	 </span>
 <span class="line-any" title="Any Types on this line: 
-Unannotated (x1)">    def SET_inteligencia(self, nueva_IA) -&gt; None:</span>
+Unannotated (x1)">	def SET_inteligencia(self, nueva_IA) -&gt; None:</span>
 <span class="line-any" title="Any Types on this line: 
 Unannotated (x1)
-Unimported (x1)">        self.mi_inteligencia = nueva_IA;</span>
+Unimported (x1)">		self.mi_inteligencia = nueva_IA;</span>
 <span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-empty" title="No Anys on this line!">    #       JUEGO.</span>
+<span class="line-empty" title="No Anys on this line!">	#		JUEGO.</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x1)">    def GET_juego(self) -&gt; Juego:</span>
+Unimported (x1)">	def GET_juego(self) -&gt; Juego:</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x1)">        return self.mi_juego;</span>
-<span class="line-empty" title="No Anys on this line!">    </span>
+Unimported (x1)">		return self.mi_juego;</span>
+<span class="line-empty" title="No Anys on this line!">	 </span>
 <span class="line-any" title="Any Types on this line: 
-Unannotated (x1)">    def SET_juego(self, nueva_partida) -&gt; None:</span>
+Unannotated (x1)">	def SET_juego(self, nueva_partida) -&gt; None:</span>
 <span class="line-any" title="Any Types on this line: 
 Unannotated (x1)
-Unimported (x1)">        self.mi_juego = nueva_partida;</span>
+Unimported (x1)">		self.mi_juego = nueva_partida;</span>
 <span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-empty" title="No Anys on this line!">    #       INTERFAZ.</span>
+<span class="line-empty" title="No Anys on this line!">	#		INTERFAZ.</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x1)">    def GET_interfaz(self) -&gt; Interfaz:</span>
+Unimported (x1)">	def GET_interfaz(self) -&gt; Interfaz:</span>
 <span class="line-any" title="Any Types on this line: 
-Unimported (x1)">        return self.mi_interfaz;</span>
+Unimported (x1)">		return self.mi_interfaz;</span>
 <span class="line-empty" title="No Anys on this line!"></span>
 <span class="line-any" title="Any Types on this line: 
-Unannotated (x1)">    def SET_interfaz(self, nueva_GUI) -&gt; None:</span>
+Unannotated (x1)">	def SET_interfaz(self, nueva_GUI) -&gt; None:</span>
 <span class="line-any" title="Any Types on this line: 
 Unannotated (x1)
-Unimported (x1)">        self.mi_interfaz = nueva_GUI;</span>
-<span class="line-empty" title="No Anys on this line!"></span>
-<span class="line-empty" title="No Anys on this line!">    </span>
-<span class="line-empty" title="No Anys on this line!">    </span>
+Unimported (x1)">		self.mi_interfaz = nueva_GUI;</span>
 </pre></td>
 </tr></tbody>
 </table>

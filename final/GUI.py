@@ -26,13 +26,14 @@ class Interfaz():
 		self.TURNOS:List[bool] = [False, True]; 
 
 	#   Metodos.
-	def renderizar_fichas(self, partida) -> None:
+	def renderizar_fichas(self) -> None:
 		"""..."""
 
 		#	Traemos la ventana.
 		ventana = self.GET_ventana();
 
 		#	Traemos la instancia de la partida junto con el tablero.
+		partida = self.GET_partida();
 		tablero = partida.GET_estado_juego();
 
 		#	Calculando la posición del tablero.
@@ -65,12 +66,14 @@ class Interfaz():
 			posicion_y += alto_celda + 0.5;
 
 
-	def renderizar_texto(self, ventana):
+	def renderizar_texto(self, ventana) -> None:
 		"""..."""
 		
 		#	Traemos los valores de las fichas.
 		numero_fichas_blancas:int = self.GET_numero_fichas(1);
 		numero_fichas_negras:int = self.GET_numero_fichas(2);
+		termino = self.GET_terminado();
+
 		turnos:List[bool] = self.GET_turnos(); # 0, blanca, 1, negra.
 
 		fuente_juego = self.GET_fuente();
@@ -78,10 +81,30 @@ class Interfaz():
 		texto_fichas_negras = pygame.font.Font.render(fuente_juego, str(numero_fichas_negras), True, (24, 27, 28));
 		texto_turno_blanca = pygame.font.Font.render(fuente_juego, "Turno: Ficha blanca", True, (24, 27, 28));
 		texto_turno_negra = pygame.font.Font.render(fuente_juego, "Turno: Ficha negra", True, (24, 27, 28));
+		texto_termino_partida = pygame.font.Font.render(fuente_juego, "Empataron", True, (24, 27, 28));
+		texto_gana_blanco = pygame.font.Font.render(fuente_juego, "Gana Ficha blanca", True, (24, 27, 28));
+		texto_gana_negro = pygame.font.Font.render(fuente_juego, "Gana Ficha negra", True, (24, 27, 28));
 
 		#	Renderizado del texto.
 		#	TURNO: ficha blanca.
-		if (turnos[0]):
+		if (termino):
+			#	Comprobando: victoria ficha blanca.
+			if (numero_fichas_blancas > numero_fichas_negras):
+				ventana.blit(texto_gana_blanco, dest=(220, 668));
+
+			#	Comprobando: victoria ficha negra.
+			elif (numero_fichas_blancas < numero_fichas_negras):
+				ventana.blit(texto_gana_negro, dest=(220, 668));
+
+			#	Comprobando: Empate.
+			elif (numero_fichas_blancas == numero_fichas_negras):
+				ventana.blit(texto_termino_partida, dest=(250, 668));
+
+			#	ERROR: Error al determinar quien es ganador.
+			else:
+				print("[DEV][ERROR][renderizar_texto] Error al determinar al ganador.");
+
+		elif (turnos[0]):
 			ventana.blit(texto_turno_blanca, dest=(220, 668));
 
 		#	TURNO: ficha negra.
@@ -101,7 +124,7 @@ class Interfaz():
 			ventana.blit(texto_fichas_negras, dest=(178, 122));
 
 
-	def renderizado_objetos(self, partida) -> None:
+	def renderizado_objetos(self) -> None:
 		"""..."""
 
 		#	Trayendo la instancia de ventana.
@@ -116,15 +139,11 @@ class Interfaz():
 		elif(dificultad[2]):	
 			ventana.blit(self.GET_dificultad(3), (0,0));
 		
-		#	Cargando los objetos que deben renderizarse.
-		# ventana.blit(self.GET_background(), (0,0));
-		
 		#	Renderizar texto
 		self.renderizar_texto(ventana);
 
 		#	Renderizado de fichas del tablero.
-		self.renderizar_fichas(partida);
-
+		self.renderizar_fichas();
 
 		#	Actualización de la ventana.
 		pygame.display.flip();
@@ -297,7 +316,6 @@ class Interfaz():
 		elif (coordenada_x in range(546, 582) and coordenada_y in range(640, 670)):
 			self.activar_boton_repositorio();
 
-
 		#	Boton: 'TABLERO'.
 		elif (coordenada_x in range(78, 520) and coordenada_y in range(222, 660)):
 			tablero_coordenadas:Tuple[int, int] = self.controlador_coordenadas_tablero(coordenadas);
@@ -346,6 +364,7 @@ class Interfaz():
 		#	Definimos un estado inicial para la dificultad.
 		#	Esta configuración es para que al comenzar el juego, la IA este definida como Facil.
 		self.SET_estado_dificultad([True, False, False]);
+		self.SET_terminado(False);
 
 		#   Configuración de la ventana.
 		pygame.init();
@@ -367,9 +386,6 @@ class Interfaz():
 		modo_dificil:Any = self.cargador_assets("img", "background-dificil.jpg", es_png=False);
 		self.SET_dificultad(3, modo_dificil);
 
-		# fondo_juego:Any = self.cargador_assets("img", "background.jpg", es_png=False);
-		# self.SET_background(fondo_juego);
-
 		ficha_blanca:Any = self.cargador_assets("img", "ficha_j2.png", es_png=True);
 		self.SET_ficha(1, ficha_blanca);
 
@@ -389,7 +405,7 @@ class Interfaz():
 			self.contador_fichas(partida);
 
 			#   Renderizando los elementos en pantalla.
-			self.renderizado_objetos(partida);
+			self.renderizado_objetos();
 
 			#   Manejo de eventos del usuario.
 			for evento in pygame.event.get():
@@ -418,29 +434,37 @@ class Interfaz():
 						print(f"[DEV y: {indice_y}, x: {indice_x}");
 
 						#	Insertar jugabilidad aqui...
-						tablero = partida.GET_estado_juego();
-						tablero[indice_y][indice_x] = 1;
+						partida.iniciar_jugabilidad((indice_x, indice_y));
 
-						partida.SET_estado_juego(tablero);
+						
+						#	Procesos POST-partida.
+						terminado_juego:bool = partida.GET_terminado();
+						if (terminado_juego == True):
+							print("[DEV][GUI] El juego termino");
+							self.SET_terminado(partida.GET_terminado());
 
-
-					# #	Prueba de turnos.
-					# turnos:List[bool] = self.GET_turnos()
-					# nuevos_turnos = [not(turnos[0]), not(turnos[1])]
-					# self.SET_turnos(nuevos_turnos);
-					
-
+						elif (terminado_juego == False):
+							print("[DEV][GUI] El juego no termino");
+							self.SET_terminado(partida.GET_terminado());
+				
 
 	#	Getters & Setters.
-	#		LISTA DIFICULTAD
+	#		TERMINADO.
+	def GET_terminado(self) -> bool:
+		return self.TERMINADO;
+
+	def SET_terminado(self, configuracion:bool) -> None:
+		self.TERMINADO = configuracion;
+
+	#		LISTA DIFICULTAD.
 	def GET_estado_dificultad(self) -> List[bool]:
 		return self.ESTADO_DIFICULTAD;
 
-	def SET_estado_dificultad(self, nuevo_estado:List[bool]) -> List[bool]:
+	def SET_estado_dificultad(self, nuevo_estado:List[bool]) -> None:
 		self.ESTADO_DIFICULTAD = nuevo_estado;
 
 	#		MODO DIFICULTAD
-	def GET_dificultad(self, nivel:str) -> Any:
+	def GET_dificultad(self, nivel:int) -> Any:
 		#	Modo: Facil.
 		if(nivel == 1):
 			return self.MODO_FACIL;
@@ -456,7 +480,7 @@ class Interfaz():
 		else:
 			print("[DEV][ERROR][GET_dificultad] No se encuentra el nivel especificado.");
 
-	def SET_dificultad(self, nivel:str, recurso:Any) -> None:
+	def SET_dificultad(self, nivel:int, recurso:Any) -> None:
 		#	Modo: Facil.
 		if(nivel == 1):
 			self.MODO_FACIL = recurso;

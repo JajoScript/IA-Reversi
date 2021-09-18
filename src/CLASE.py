@@ -523,6 +523,7 @@ def minimax(juego,estado,profundidad,etapa):
 	else:
 		valor = [1000, None]
 		jugadas_posibles = juego.Generador_Jugadas_validas(2)
+
 	for jugada in jugadas_posibles:
 		if etapa == 1:
 			if juego.Esta_vacia(jugada) and juego.Es_adyacente(jugada) and juego.Permite_salto_negra(jugada):
@@ -532,8 +533,11 @@ def minimax(juego,estado,profundidad,etapa):
 			if juego.Esta_vacia(jugada) and juego.Es_adyacente(jugada) and juego.Permite_salto_blanca(jugada):
 				juego.ESTADO_JUEGO[jugada[0]][jugada[1]]=1
 				juego.jugada.append(jugada)
+
 		estado_de_juego=copy.deepcopy(juego.ESTADO_JUEGO)
-		opcion = minimax(juego,estado_de_juego,profundidad+1,etapa*-1)
+
+		opcion = minimax(juego,estado_de_juego, profundidad+1 , etapa*-1)
+
 		#maximizar
 		if etapa == 1:
 			if valor[0] < opcion[0]:
@@ -543,4 +547,5 @@ def minimax(juego,estado,profundidad,etapa):
 			if valor[0] > opcion[0]:
 				valor = [opcion[0], jugada]
 		juego.Devolver_estado(estado)
+		
 	return valor

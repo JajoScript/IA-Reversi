@@ -1,6 +1,6 @@
 #	-- Dependencias.
 #	Dependencias externas.
-from typing import List, Any;
+from typing import List, Any, Tuple;
 import numpy as np;
 
 #	Dependencias Internas.
@@ -17,6 +17,49 @@ class Juego():
 		self.numero_columnas = numero_columnas;
 
 	#	Metodos.
+	def comprobar_finalizacion(self) -> bool:
+		"""..."""
+
+		#	Traemos el estado del juego.
+		tablero = self.GET_estado_juego();
+
+		#	CASO 1: No quedan casillas vacias.
+		if not (0 in tablero):
+			#	Se retorna True dado que, el juego SI termino.
+			self.SET_terminado(True);
+			return True;
+		#	CASO 2: No quedan más movimientos para la ficha blanca.
+
+		#	CASO 3: No quedan más movimientos para la ficha negra.
+		else:
+			#	Se retorna False dado que, el juego NO termino.
+			self.SET_terminado(False);
+			return False;
+
+
+		#	ERROR: No se determino ningun caso.
+	
+
+	def iniciar_jugabilidad(self, coordenadas:Tuple[int, int]) -> None:
+		"""..."""
+
+		print(f"[DEV] Iniciando la jugabilidad...")	
+		print(f"[DEV] (x: {coordenadas[0]}, y: {coordenadas[1]})");
+		
+		#	Comprobar si el juego termino.
+		esta_terminado:bool = self.comprobar_finalizacion();
+
+		if (esta_terminado):
+			#	El juego termino.
+			print("[DEV] el juego termino.")
+			
+		else:
+			#	El juego no termino.
+			print("[DEV] el juego no termino...")
+			print("[DEV] Iniciando calculos...")
+			# Más jugabilidad aqui....
+		
+
 	def definir_estado_inicial(self) -> None:
 		"""..."""
 		
@@ -45,6 +88,14 @@ class Juego():
 		print("-"*12);
 
 	#	Getters & Setters.
+	#		TERMINADO.
+	def GET_terminado(self) -> bool:
+		return self.TERMINADO;
+
+	def SET_terminado(self, nueva_configuracion) -> None:
+		self.TERMINADO = nueva_configuracion;
+
+	#		ESTADO DEL JUEGO.
 	def GET_estado_juego(self) -> Any:
 		return self.estado_juego;
 

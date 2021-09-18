@@ -15,9 +15,9 @@ class Controlador():
 	#	Constructor.
 	def __init__(self) -> None:
 		#	Instancias de clases.
-		self.mi_inteligencia = Inteligencia();
-		self.mi_juego = Juego(numero_filas=6, numero_columnas=6);
-		self.mi_interfaz = Interfaz(DIR="final");
+		self.mi_inteligencia:Inteligencia = Inteligencia();
+		self.mi_juego:Juego = Juego(numero_filas=6, numero_columnas=6);
+		self.mi_interfaz:Interfaz = Interfaz(DIR="final");
 
 
 	#	Metodos.
