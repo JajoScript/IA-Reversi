@@ -12,6 +12,9 @@ env/
 */__pycache__/
 __pycache__/
 
+#  Temporales.
+temp/
+
 # Error control Python.
 .mypy_cache/
 

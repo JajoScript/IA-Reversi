@@ -17,6 +17,28 @@ class Juego():
 		self.numero_columnas = numero_columnas;
 
 	#	Metodos.
+	def comprobar_tiene_adyacente(self) -> None:
+		
+		pass
+
+	def comprobar_vacia(self, coordenadas:Tuple[int,int]) -> bool:
+		"""..."""
+
+		#	Traemos el tablero.
+		tablero = self.GET_estado_juego();
+		self.mostrar_tablero();
+		
+		fila:int = coordenadas[0];
+		columna:int = coordenadas[1];
+
+		if (tablero[fila][columna] == 0):
+			print("[DEV][comprobar_vacia] La celda esta vacia.")
+			#	Se retorna True, la celda SI esta vacia.
+			return True;
+		else:
+			#	Se retorna False, la celda NO esta vacia.
+			return False;
+
 	def comprobar_finalizacion(self) -> bool:
 		"""..."""
 
@@ -33,6 +55,7 @@ class Juego():
 		#	CASO 3: No quedan más movimientos para la ficha negra.
 		else:
 			#	Se retorna False dado que, el juego NO termino.
+			#	Se define la propiedad TERMINADO como False.
 			self.SET_terminado(False);
 			return False;
 
@@ -42,23 +65,39 @@ class Juego():
 
 	def iniciar_jugabilidad(self, coordenadas:Tuple[int, int]) -> None:
 		"""..."""
-
 		print(f"[DEV] Iniciando la jugabilidad...")	
-		print(f"[DEV] (x: {coordenadas[0]}, y: {coordenadas[1]})");
-		
+		columna:int = coordenadas[0];
+		fila:int = coordenadas[1];
+				
 		#	Comprobar si el juego termino.
 		esta_terminado:bool = self.comprobar_finalizacion();
+		esta_vacia:bool = self.comprobar_vacia((fila, columna));
 
 		if (esta_terminado):
 			#	El juego termino.
 			print("[DEV] el juego termino.")
 			
-		else:
+		elif not (esta_terminado):
 			#	El juego no termino.
 			print("[DEV] el juego no termino...")
-			print("[DEV] Iniciando calculos...")
-			# Más jugabilidad aqui....
-		
+			print("[DEV] Procesando turno...")
+			
+			#	Comprobacion: La casilla seleccionada esta vacia.
+			if (esta_vacia):
+				print("[DEV] Continua la jugada...");
+				#	Comprobar que la jugada sea valida.
+
+			elif not (esta_vacia):
+				
+
+				#	Se vuelve al tablero.
+				print("[DEV] Se cancela la jugada...");
+
+			else:
+				print("[DEV][ERROR][iniciar_jugabilidad] Error al determinar la jugada.");
+		else:
+			print("[DEV][ERROR][iniciar_jugabilidad] Error al determinar la jugada.");
+				
 
 	def definir_estado_inicial(self) -> None:
 		"""..."""
