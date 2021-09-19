@@ -60,7 +60,8 @@ class Interfaz():
 					pass
 
 				else:
-					print("[DEV][renderizar_fichas][ERROR] elemento no conocido en el tablero.");
+					print("[DEV][GUI][ERROR][renderizar_fichas]")
+					print("[>] Elemento no conocido en el tablero.");
 
 				posicion_x += ancho_celda + 0.5;
 			posicion_y += alto_celda + 0.5;
@@ -102,7 +103,8 @@ class Interfaz():
 
 			#	ERROR: Error al determinar quien es ganador.
 			else:
-				print("[DEV][ERROR][renderizar_texto] Error al determinar al ganador.");
+				print("[DEV][GUI][ERROR][renderizar_texto]")
+				print("[>] Error al determinar al ganador.");
 
 		elif (turnos[0]):
 			ventana.blit(texto_turno_blanca, dest=(220, 668));
@@ -170,7 +172,8 @@ class Interfaz():
 
 		#	CASO: Error, no se especifica.
 		else:
-			print("[DEV][ERROR] Error al cargar el assets, no hay tipo definido.");
+			print("[DEV][GUI][ERROR][cargador_assets]")
+			print("[>] Error al cargar el assets, no hay tipo definido.");
 			return None;
 
 
@@ -197,7 +200,8 @@ class Interfaz():
 		elif (coordenada_y in range(584, 656)):
 			indice_y = 5;
 		else:
-			print("[DEV][ERROR] Error al momento de determinar la coordenada del tablero en el eje Y.");
+			print("[DEV][GUI][ERROR][controlador_coordenadas_tablero]")
+			print("[>] Error al momento de determinar la coordenada del tablero en el eje Y.");
 			return (-1, -1);
 		
 		#	Determinación coordenadas EJE X.
@@ -214,7 +218,8 @@ class Interfaz():
 		elif (coordenada_x in range(446, 520)):
 			indice_x = 5;
 		else:
-			print("[DEV][ERROR] Error al momento de determinar la coordenada del tablero en el eje X.");
+			print("[DEV][GUI][ERROR][controlador_coordenadas_tablero]")
+			print("[>] Error al momento de determinar la coordenada del tablero en el eje X.");
 			return (-1, -1);
 
 		return (indice_x, indice_y);
@@ -225,7 +230,7 @@ class Interfaz():
 
 		#	Determinando funcionalidad dependiendo de la dificultad.
 		if (dificultad == "FACIL"):
-			print("[DEV][EVENTO] Se pulso el boton FACIL");
+			print("[DEV][GUI][EVENTO] Se pulso el boton FACIL");
 			#	Reincio del tablero.
 			self.activar_boton_nuevo_juego();
 
@@ -236,7 +241,7 @@ class Interfaz():
 			#	Agregar funcionalidad...
 
 		elif (dificultad == "MEDIO"):
-			print("[DEV][EVENTO] Se pulso el boton MEDIO");
+			print("[DEV][GUI][EVENTO] Se pulso el boton MEDIO");
 			#	Reincio del tablero.
 			self.activar_boton_nuevo_juego();
 
@@ -247,7 +252,7 @@ class Interfaz():
 			#	Agregar funcionalidad...
 
 		elif (dificultad == "DIFICIL"):
-			print("[DEV][EVENTO] Se pulso el boton DIFICIL");
+			print("[DEV][GUI][EVENTO] Se pulso el boton DIFICIL");
 			#	Reincio del tablero.
 			self.activar_boton_nuevo_juego();
 			
@@ -258,16 +263,17 @@ class Interfaz():
 			#	Agregar funcionalidad...
 
 		else:
-			print("[DEV][activar_boton_dificultad][ERROR] no esta definido el boton seleccionado.");
+			print("[DEV][GUI][ERROR][activar_boton_dificultad]")
+			print("[>] No esta definido el boton seleccionado.");
 
 
 	def activar_boton_nuevo_juego(self) -> None:
 		"""..."""
-		print("[DEV] Se pulso el boton de nuevo juego!");
+		print("[DEV][GUI] Se pulso el boton de nuevo juego!");
 
 		#	Traemos la instancia de la partida.
 		juego = self.GET_partida();
-		print(f"[DEV] juego 221: {juego}");
+		print(f"[DEV][GUI] juego 221: {juego}");
 		juego.definir_estado_inicial();
 
 		#	Definimos los turnos.
@@ -277,13 +283,18 @@ class Interfaz():
 
 	def activar_boton_pista(self) -> None:
 		"""..."""
-		print("[DEV] Se pulso el boton de pista!");
+		print("[DEV][GUI] Se pulso el boton de pista!");
 		pass
 
 	def activar_boton_repositorio(self) -> None:
 		"""..."""
-		print("[DEV] abriendo el repositorio en el navegador...")
-		webbrowser.open("https://github.com/JajoScript/IA-Reversi", new=2, autoraise=True);
+		try:
+			print("[DEV][GUI] abriendo el repositorio en el navegador...");
+			webbrowser.open("https://github.com/JajoScript/IA-Reversi", new=2, autoraise=True);
+		except:
+			print("[DEV][GUI][ERROR][activar_boton_repositorio]");
+			print("[>] Error al abrir el repositorio.");
+		
 
 	def controlador_coordenadas(self, coordenadas:Tuple[int, int]) -> Tuple[int, int]:
 		"""..."""
@@ -319,13 +330,14 @@ class Interfaz():
 		#	Boton: 'TABLERO'.
 		elif (coordenada_x in range(78, 520) and coordenada_y in range(222, 660)):
 			tablero_coordenadas:Tuple[int, int] = self.controlador_coordenadas_tablero(coordenadas);
-			print("[DEV][EVENTO] Se pulso el tablero.");
+			print("[DEV][GUI][EVENTO] Se pulso el tablero.");
 			print(tablero_coordenadas)
 			return tablero_coordenadas;
 
 		#	ERROR: Indeterminación.
 		else:
-			print("[DEV][ERROR][controlador_coordenadas] Indeterminación a la hora de conocer donde pulso.");
+			print("[DEV][GUI][ERROR][controlador_coordenadas]")
+			print("[>] Indeterminación a la hora de conocer donde pulso.");
 
 		#	Retorno general.
 		return (-1, -1)
@@ -358,7 +370,7 @@ class Interfaz():
 		"""..."""
 
 		#	Definimos como propiedad la partida.
-		print(f"[DEV] partida 309: {partida}")
+		print(f"[DEV][GUI] partida 309: {partida}")
 		self.SET_partida(partida);
 
 		#	Definimos un estado inicial para la dificultad.
@@ -417,14 +429,14 @@ class Interfaz():
 				if evento.type == pygame.MOUSEBUTTONDOWN:
 					#	Capturando la posición del mouse.
 					posicion_mouse:Tuple[int, int] = pygame.mouse.get_pos();
-					print(f"[DEV] Mouse click (x: {posicion_mouse[0]}, y: {posicion_mouse[1]})")
+					print(f"[DEV][GUI] Mouse click (x: {posicion_mouse[0]}, y: {posicion_mouse[1]})")
 
 					#	Implementación de la jugabilidad.
 					coordenadas:Tuple[int, int] = self.controlador_coordenadas(posicion_mouse);
 
 					#	CASO: No es valido pasarle las coordenadas al juego.
 					if ((coordenadas[0] == -1) or (coordenadas[1] == -1)):
-						print("[DEV] Se pulso fuera del tablero.");
+						print("[DEV][GUI] Se pulso fuera del tablero.");
 
 					elif ((coordenadas[0] != -1) or (coordenadas[1] != -1)):
 						#	Posiciones del tablero.
@@ -433,9 +445,16 @@ class Interfaz():
 
 						print(f"[DEV y: {indice_y}, x: {indice_x}");
 
-						#	Insertar jugabilidad aqui...
-						partida.iniciar_jugabilidad((indice_x, indice_y));
-
+						#	Determinando de quien es el turno.
+						turnos:List[bool] = self.GET_turnos();
+						if(turnos[0]):
+							print("[DEV][GUI] Jugada de ficha: blanca.");
+							partida.iniciar_jugabilidad((indice_x, indice_y), color_ficha=1);
+							
+						elif (turnos[1]):
+							print("[DEV][GUI] Jugada de ficha: negra.");
+							partida.iniciar_jugabilidad((indice_x, indice_y), color_ficha=2);
+						
 						
 						#	Procesos POST-partida.
 						terminado_juego:bool = partida.GET_terminado();
@@ -478,7 +497,8 @@ class Interfaz():
 			return self.MODO_DIFICIL;
 
 		else:
-			print("[DEV][ERROR][GET_dificultad] No se encuentra el nivel especificado.");
+			print("[DEV][GUI][ERROR][GET_dificultad]")
+			print("[>] No se encuentra el nivel especificado.");
 
 	def SET_dificultad(self, nivel:int, recurso:Any) -> None:
 		#	Modo: Facil.
@@ -494,7 +514,8 @@ class Interfaz():
 			self.MODO_DIFICIL = recurso;
 
 		else:
-			print("[DEV][ERROR][SET_dificultad] No se encuentra el nivel especificado.");
+			print("[DEV][GUI][ERROR][SET_dificultad]")
+			print("[>] No se encuentra el nivel especificado.");
 
 	#		PARTIDA.
 	def GET_partida(self) -> Any:
@@ -515,7 +536,7 @@ class Interfaz():
 
 		#	CASO: Error.
 		else:
-			print("[DEV][get_numero_fichas] Error al retornar el valor de fichas.");
+			print("[DEV][GUI][get_numero_fichas] Error al retornar el valor de fichas.");
 			return 0;
 
 	def SET_numero_fichas(self, color_ficha:int, numero_ficha:int) -> None:
@@ -529,7 +550,7 @@ class Interfaz():
 
 		#	CASO: Error.
 		else:
-			print("[DEV][set_fichas] Error al cargar el numero de fichas.");
+			print("[DEV][GUI][set_fichas] Error al cargar el numero de fichas.");
 
 	#		TURNOS.
 	def GET_turnos(self) -> List[bool]:
@@ -564,7 +585,7 @@ class Interfaz():
 		
 		#	CASO: Error, No especificado.
 		else:
-			print("[DEV][GET_ficha] Error al cargar ficha, color no especificado.");
+			print("[DEV][GUI][GET_ficha] Error al cargar ficha, color no especificado.");
 			return None;
 
 	def SET_ficha(self, color_ficha:int, nueva_ficha:Any) -> None:
@@ -578,7 +599,7 @@ class Interfaz():
 		
 		#	CASO: Error, No especificado.
 		else:
-			print("[DEV][SET_ficha] Error al cargar ficha, color no especificado. ");
+			print("[DEV][GUI][SET_ficha] Error al cargar ficha, color no especificado. ");
 			return None;
 
 	#		DIRECTORIO.

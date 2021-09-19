@@ -26,18 +26,22 @@ class Juego():
 
 		#	Traemos el tablero.
 		tablero = self.GET_estado_juego();
-		self.mostrar_tablero();
 		
 		fila:int = coordenadas[0];
 		columna:int = coordenadas[1];
 
+		#	Comprobaciones.
 		if (tablero[fila][columna] == 0):
-			print("[DEV][comprobar_vacia] La celda esta vacia.")
+			print("[DEV][GAME] La celda esta vacia.")
 			#	Se retorna True, la celda SI esta vacia.
 			return True;
-		else:
+		elif(tablero[fila][columna] != 0):
 			#	Se retorna False, la celda NO esta vacia.
 			return False;
+		else:
+			print("[DEV][GAME][comprobar_vacia]")
+			print("[>] Error al comprobar si la celda esta vacia.")
+			
 
 	def comprobar_finalizacion(self) -> bool:
 		"""..."""
@@ -63,40 +67,48 @@ class Juego():
 		#	ERROR: No se determino ningun caso.
 	
 
-	def iniciar_jugabilidad(self, coordenadas:Tuple[int, int]) -> None:
+	def iniciar_jugabilidad(self, coordenadas:Tuple[int, int], color_ficha:int) -> None:
 		"""..."""
-		print(f"[DEV] Iniciando la jugabilidad...")	
+
+		print(f"[DEV][GAME] Iniciando la jugabilidad...")	
 		columna:int = coordenadas[0];
 		fila:int = coordenadas[1];
-				
+
+		#	Definiendo de quien es el turno.
+		self.SET_jugador(color_ficha);
+
 		#	Comprobar si el juego termino.
 		esta_terminado:bool = self.comprobar_finalizacion();
 		esta_vacia:bool = self.comprobar_vacia((fila, columna));
 
+		#	Comprobaciones: Determinar si se puede o no jugar...
 		if (esta_terminado):
 			#	El juego termino.
-			print("[DEV] el juego termino.")
+			print("[DEV][GAME] el juego termino.")
 			
 		elif not (esta_terminado):
 			#	El juego no termino.
-			print("[DEV] el juego no termino...")
-			print("[DEV] Procesando turno...")
+			print("[DEV][GAME] El juego no termino...")
+			print("[DEV][GAME] Procesando turno...")
 			
 			#	Comprobacion: La casilla seleccionada esta vacia.
 			if (esta_vacia):
-				print("[DEV] Continua la jugada...");
-				#	Comprobar que la jugada sea valida.
+				print("[DEV][GAME] Continua la jugada...");
+				print(f"[DEV][GAME] Esta jugando la ficha: {self.GET_jugador()}")
+
+				#	Comprobación: La casilla seleccionada tiene una ficha adyacente.
+				#	Comprobación: La casilla seleccionada es una jugada valida.
+			
 
 			elif not (esta_vacia):
-				
-
 				#	Se vuelve al tablero.
-				print("[DEV] Se cancela la jugada...");
-
+				print("[DEV][GAME] Se cancela la jugada, la celda no esta vacia...");
 			else:
-				print("[DEV][ERROR][iniciar_jugabilidad] Error al determinar la jugada.");
+				print("[DEV][GAME][ERROR][iniciar_jugabilidad]")
+				print("[>] Error al determinar la jugada.");
 		else:
-			print("[DEV][ERROR][iniciar_jugabilidad] Error al determinar la jugada.");
+			print("[DEV][GAME][ERROR][iniciar_jugabilidad]")
+			print("[>] Error al determinar la jugada.");
 				
 
 	def definir_estado_inicial(self) -> None:
@@ -111,7 +123,7 @@ class Juego():
 
 		#	Guardamos la configuración inicial del tablero.
 		self.SET_estado_juego(tablero);
-		print("[DEV] se definio un nuevo estado inicial para la partida");
+		print("[DEV][GAME] se definio un nuevo estado inicial para la partida");
 		
 	def mostrar_tablero(self) -> None:
 		"""..."""
@@ -127,6 +139,13 @@ class Juego():
 		print("-"*12);
 
 	#	Getters & Setters.
+	#		JUGADOR.
+	def GET_jugador(self) -> int:
+		return self.JUGADOR;
+	
+	def SET_jugador(self, color_ficha) -> None:
+		self.JUGADOR = color_ficha;
+
 	#		TERMINADO.
 	def GET_terminado(self) -> bool:
 		return self.TERMINADO;
