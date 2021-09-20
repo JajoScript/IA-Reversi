@@ -363,7 +363,7 @@ class Juego():
 		#	Comprobaciones: Determinar si se puede o no jugar...
 		if (esta_terminado):
 			#	El juego termino.
-			print("[DEV][GAME] el juego termino.");
+			print("[DEV][GAME][PRE-GAME] el juego termino.");
 			
 		elif not (esta_terminado):
 			#	El juego no termino.
@@ -377,17 +377,29 @@ class Juego():
 
 				#	Comprobación: La casilla seleccionada tiene una ficha adyacente.
 				tiene_adyacente:bool = self.comprobar_tiene_adyacente((fila, columna));
-
 				if (tiene_adyacente == True):
 					print("[DEV] La celda tiene adyancente, procediendo a la siguiente comprobación.");
 
 					#	Comprobación: La casilla seleccionada es una jugada valida.
+
 					nuevo_tablero = self.GET_estado_juego();
 					nuevo_tablero[fila][columna] = color_ficha;
 					self.SET_estado_juego(nuevo_tablero);
 
 					print("[DEV] POST GAME");
 					self.mostrar_tablero();
+
+					#	Realizar cambio de turnos.
+					turnos:List[bool] = self.GET_turnos();
+					nuevos_turnos:List[bool] = [not(turnos[0]), not(turnos[1])];
+					self.SET_turnos(nuevos_turnos);
+
+					#	Re-Comprobación: Verificar si el juego termino. Para actualizar la GUI.
+					esta_terminado = self.comprobar_finalizacion();
+					if (esta_terminado):
+						print("[DEV][GAME][POST-GAME] el juego termino.");
+					elif not (esta_terminado):
+						print("[DEV][GAME][POST-GAME] el juego no termino.");
 
 				elif (tiene_adyacente == False):
 					#	Se vuelve al tablero.
@@ -432,6 +444,13 @@ class Juego():
 		print("-"*12);
 
 	#	Getters & Setters.
+	#		TURNOS.
+	def GET_turnos(self) -> List[bool]:
+		return self.TURNOS;
+
+	def SET_turnos(self, nuevos_turnos:List[bool]) -> None:
+		self.TURNOS = nuevos_turnos;
+
 	#		JUGADOR.
 	def GET_jugador(self) -> int:
 		return self.JUGADOR;

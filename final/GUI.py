@@ -418,7 +418,7 @@ class Interfaz():
 			#	Contador de fichas.
 			self.contador_fichas(partida);
 
-			#   Renderizando los elementos en pantalla.
+			#	Renderizando los elementos en pantalla.
 			self.renderizado_objetos();
 
 			#   Manejo de eventos del usuario.
@@ -449,6 +449,8 @@ class Interfaz():
 
 						#	Determinando de quien es el turno.
 						turnos:List[bool] = self.GET_turnos();
+						partida.SET_turnos(turnos);
+
 						if(turnos[0]):
 							print("[DEV][GUI] Jugada de ficha: blanca.");
 							partida.iniciar_jugabilidad((indice_x, indice_y), color_ficha=1);
@@ -467,6 +469,10 @@ class Interfaz():
 						elif (terminado_juego == False):
 							print("[DEV][GUI] El juego no termino");
 							self.SET_terminado(partida.GET_terminado());
+
+							#	Cambiazo de los turnos.
+							nuevos_turnos:List[bool] = partida.GET_turnos();
+							self.SET_turnos(nuevos_turnos);
 				
 
 	#	Getters & Setters.
