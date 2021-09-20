@@ -1,6 +1,7 @@
 #	-- Dependencias.
 #	Dependencias externas.
-from typing import List, Any, Tuple;
+from os import truncate
+from typing import AsyncIterable, List, Any, Tuple;
 import numpy as np;
 
 #	Dependencias Internas.
@@ -17,13 +18,412 @@ class Juego():
 		self.numero_columnas = numero_columnas;
 
 	#	Metodos.
+	def convertir_fichas(self, fila_inicial:int, fila_final:int, columna_inicial:int, columna_final:int, modo:str) -> None:
+		"""..."""
+
+		#	Traemos el estado del juego.
+		tablero:Any = self.GET_estado_juego();
+		jugador:int = self.GET_jugador();
+
+		print(f"[DEV][GAME][convertir_fichas][ficha: {jugador}] PRE-CONVERTIR [{modo}]");
+		print(f"[DEV][GAME][convertir_fichas] fi:{fila_inicial}, ff:{fila_final}, ci:{columna_inicial}, cf:{columna_final}")
+		self.mostrar_tablero();
+		
+
+		#	Convertir: Convertir fichas hacia arriba.
+		if (modo == "ARRIBA"):
+			while (fila_inicial != fila_final):
+				tablero[(fila_inicial)][(columna_inicial)] = jugador;
+				fila_inicial = (fila_inicial - 1);
+
+		#	Convertir: Convertir fichas hacia la arriba a la derecha.
+		elif (modo == "ARRIBA-DERECHA"):
+			while (fila_inicial != fila_final):
+				tablero[(fila_inicial)][(columna_inicial)] = jugador;
+				fila_inicial = (fila_inicial - 1);
+				columna_inicial = (columna_inicial + 1);
+
+		#	Convertir: Convertir fichas hacia la arriba a la izquierda.
+		elif (modo == "ARRIBA-IZQUIERDA"):
+			while (fila_inicial != fila_final):
+				tablero[(fila_inicial)][(columna_inicial)] = jugador;
+				fila_inicial = (fila_inicial - 1);
+				columna_inicial = (columna_inicial - 1);
+
+		#	Convertir: Convertir fichas hacia la derecha.
+		elif (modo == "CENTRO-DERECHA"):
+			columna_inicial = columna_inicial - 1;	#	Parche para que funque bien ._.
+			while (columna_inicial != columna_final):
+				print(f"columna_inicial: {columna_inicial}")
+				tablero[(fila_inicial)][(columna_inicial)] = jugador;
+				columna_inicial = (columna_inicial + 1);
+			self.mostrar_tablero();
+		
+		#	Convertir: Convertir fichas hacia la izquierda.
+		elif (modo == "CENTRO-IZQUIERDA"):
+			columna_inicial = columna_inicial + 1; #	Parche para que funque bien ._.
+			while (columna_inicial != columna_final):
+				print(f"columna_inicial: {columna_inicial}")
+				tablero[(fila_inicial)][(columna_inicial)] = jugador;
+				columna_inicial = (columna_inicial - 1);
+			self.mostrar_tablero();
+
+		#	Convertir: Convertir fichas hacia abajo.
+		elif (modo == "ABAJO"):
+			while (fila_inicial != fila_final):
+				tablero[(fila_inicial)][(columna_inicial)] = jugador;
+				fila_inicial = (fila_inicial + 1);
+
+		#	Convertir: Convertir fichas hacia abajo a la derecha.
+		elif (modo == "ABAJO-DERECHA"):
+			while (fila_inicial != fila_final):
+				tablero[(fila_inicial)][(columna_inicial)] = jugador;
+				fila_inicial = (fila_inicial + 1);
+				columna_inicial = (columna_inicial + 1);
+
+		#	Convertir: Convertir fichas hacia abajo a la izquierda.
+		elif (modo == "ABAJO-IZQUIERDA"):
+			while (fila_inicial != fila_final):
+				tablero[(fila_inicial)][(columna_inicial)] = jugador;
+				fila_inicial = (fila_inicial + 1);
+				columna_inicial = (columna_inicial - 1);
+
+		#	Error: Error al determinar el modo de convertir.
+		else:
+			print("[DEV][GAME][ERROR][convertir_fichas]");
+			print("[>] Error al determinar el modo de convertir.");
+
+		#	Guardamos la nueva configuración del tablero.
+		print(f"[DEV][GAME][convertir_fichas][ficha: {jugador}] POST-CONVERTIR [{modo}]");
+		self.mostrar_tablero();
+		self.SET_estado_juego(tablero);
+
+	def validacion_jugadas(self, coordenadas:Tuple[int,int]) -> bool:
+		"""..."""
+
+		#	Variables locales.
+		puede_editar:bool = self.GET_puede_editar();
+		fila:int = coordenadas[0];
+		columna:int = coordenadas[1];
+
+		print(f"[DEV][GAME][validacion_jugadas] fila: {fila}, columna: {columna}");
+		tablero:Any = self.GET_estado_juego();
+		validaciones:List[bool] = [];
+		jugador:int = self.GET_jugador();
+
+		#	Determinación de la ficha objetivo.
+		#	CASO 1: La ficha objetivo es Ficha Negra.
+		if (jugador == 1):
+			jugador_objetivo:int = 2;
+
+		#	CASO 2: La ficha objetivo es Ficha Blanca.
+		elif (jugador == 2):
+			jugador_objetivo = 1;
+
+		#	Error: Error al determinar la ficha objetivo.
+		else:
+			print("[DEV][GAME][ERROR][validacion_jugadas]");
+			print("[>] Error al determinar la ficha objetivo.");
+			return False;
+
+	
+		#	Re-comprobación: tiene adyacente.
+		tiene_adyacente:bool = self.comprobar_tiene_adyacente(coordenadas=(fila, columna));
+
+		#	La celda tiene adyacente.
+		if (tiene_adyacente):
+			#	Validación: Buscar ficha hacia arriba.
+			fila_auxiliar:int = (fila - 1);
+
+			#	Rango para celdas dentro del tablero.
+			if (fila_auxiliar < 5 and fila_auxiliar > 0):
+				#	Busqueda: Ficha objetivo.
+				if (tablero[fila_auxiliar][columna] == jugador_objetivo):
+					for iterador in range((fila_auxiliar)):
+						#	Busqueda: Ficha jugador.
+						if (tablero[(fila_auxiliar - iterador - 1)][(columna)] == jugador):
+							#	Recordatorio: editar aquí para insertar la IA.
+
+							if (puede_editar):
+								self.convertir_fichas(fila, (fila_auxiliar - iterador - 1), columna, columna, "ARRIBA");
+
+							elif not (puede_editar):
+								print("[DEV][GAME][validacion_jugadas] Se valido la jugada pero no se edito.");
+
+							else:
+								print("[DEV][GAME][ERROR][validacion_jugadas]");
+								print("[>] Error al verificar la edición del tablero.");
+							
+							#	Agregamos la validación a la lista de validaciones.
+							validaciones.append(True);
+
+				#	Busqueda: No se encuentra a la ficha objetivo.
+				else:
+					validaciones.append(False);
+			#	La celda no esta en el rango determinado.
+			else:
+				validaciones.append(False);
+
+			#	Validación: Buscar ficha hacia arriba-derecha.
+			fila_auxiliar = (fila - 1);
+			columna_auxiliar:int = (columna + 1);
+
+			#	Rango para celdas dentro del tablero.
+			if (fila_auxiliar < 5 and fila_auxiliar > 0) and (columna_auxiliar < 5 and columna_auxiliar > 0):
+				par:List[int] = [fila_auxiliar, (5 - columna_auxiliar)];
+				rango:int = min(par);
+
+				#	Busqueda: Ficha objetivo.
+				if (tablero[fila_auxiliar][columna_auxiliar] == jugador_objetivo):
+					for iterador in range((rango)):
+						#	Busqueda: Ficha jugador.
+						if (tablero[(fila_auxiliar - iterador - 1)][(columna_auxiliar + iterador + 1)] == jugador):
+							#	Recordatorio: editar aquí para insertar la IA.
+							if (puede_editar):
+								self.convertir_fichas(fila, (fila_auxiliar - iterador - 1), columna, (columna_auxiliar + iterador + 1), "ARRIBA-DERECHA");
+
+							elif not (puede_editar):
+								print("[DEV][GAME][validacion_jugadas] Se valido la jugada pero no se edito.");
+
+							else:
+								print("[DEV][GAME][ERROR][validacion_jugadas]");
+								print("[>] Error al verificar la edición del tablero.");
+							
+							#	Agregamos la validación a la lista de validaciones.
+							validaciones.append(True);
+
+				#	Busqueda: No se encuentra a la ficha objetivo.
+				else:
+					validaciones.append(False);
+			#	La celda no esta en el rango determinado.
+			else:
+				validaciones.append(False);
+
+			#	Validación: Buscar ficha hacia arriba-izquierda.
+			fila_auxiliar = (fila - 1);
+			columna_auxiliar = (columna - 1);
+
+			#	Rango para celdas dentro del tablero.
+			if (fila_auxiliar < 5 and fila_auxiliar > 0) and (columna_auxiliar < 5 and columna_auxiliar > 0):
+				par = [fila_auxiliar, columna_auxiliar];
+				rango = min(par);
+
+				#	Busqueda: Ficha objetivo.
+				if (tablero[fila_auxiliar][columna_auxiliar] == jugador_objetivo):
+					for iterador in range((rango)):
+						#	Busqueda: Ficha jugador.
+						if (tablero[(fila_auxiliar - iterador - 1)][(columna_auxiliar - iterador - 1)] == jugador):
+							#	Recordatorio: editar aquí para insertar la IA.
+							if (puede_editar):
+								self.convertir_fichas(fila, (fila_auxiliar - iterador - 1), columna, (columna_auxiliar - iterador - 1), "ARRIBA-IZQUIERDA");
+
+							elif not (puede_editar):
+								print("[DEV][GAME][validacion_jugadas] Se valido la jugada pero no se edito.");
+
+							else:
+								print("[DEV][GAME][ERROR][validacion_jugadas]");
+								print("[>] Error al verificar la edición del tablero.");
+							
+							#	Agregamos la validación a la lista de validaciones.
+							validaciones.append(True);
+
+				#	Busqueda: No se encuentra a la ficha objetivo.
+				else:
+					validaciones.append(False);
+			#	La celda no esta en el rango determinado.
+			else:
+				validaciones.append(False);
+
+			#	Validación: Buscar ficha a la centro-derecha.
+			columna_auxiliar = (columna + 1);
+
+			#	Rango para celdas dentro del tablero.
+			if (columna_auxiliar < 5 and columna_auxiliar > 0):
+				#	Busqueda: Ficha objetivo.
+				if (tablero[fila][columna_auxiliar] == jugador_objetivo):
+					for iterador in range(5 - columna_auxiliar):
+						#	Busqueda: Ficha jugador.
+						if (tablero[fila][(columna_auxiliar + iterador + 1)] == jugador):
+							#	Recordatorio: editar aquí para insertar la IA.
+							if (puede_editar):
+								self.convertir_fichas(fila, fila, columna_auxiliar, (columna_auxiliar + iterador + 1), "CENTRO-DERECHA");
+
+							elif not (puede_editar):
+								print("[DEV][GAME][validacion_jugadas] Se valido la jugada pero no se edito.");
+
+							else:
+								print("[DEV][GAME][ERROR][validacion_jugadas]");
+								print("[>] Error al verificar la edición del tablero.");
+							
+							#	Agregamos la validación a la lista de validaciones.
+							validaciones.append(True);
+
+				#	Busqueda: No se encuentra a la ficha objetivo.
+				else:
+					validaciones.append(False);
+			#	La celda no esta en el rango determinado.
+			else:
+				validaciones.append(False);
+
+			#	Validación: Buscar ficha hacia centro-izquierda.
+			columna_auxiliar = (columna - 1);
+
+			#	Rango para celdas dentro del tablero.
+			if (columna_auxiliar < 5 and columna_auxiliar > 0):
+				#	Busqueda: Ficha objetivo.
+				if (tablero[fila][columna_auxiliar] == jugador_objetivo):
+					for iterador in range(columna_auxiliar):
+						#	Busqueda: Ficha jugador.
+						if (tablero[fila][(columna_auxiliar - iterador - 1)] == jugador):
+							#	Recordatorio: editar aquí para insertar la IA.
+							if (puede_editar):
+								self.convertir_fichas(fila, fila, columna_auxiliar, (columna_auxiliar - iterador - 1), "CENTRO-IZQUIERDA");
+
+							elif not (puede_editar):
+								print("[DEV][GAME][validacion_jugadas] Se valido la jugada pero no se edito.");
+							else:
+								print("[DEV][GAME][ERROR][validacion_jugadas]");
+								print("[>] Error al verificar la edición del tablero.");
+							
+							#	Agregamos la validación a la lista de validaciones.
+							validaciones.append(True);
+
+				#	Busqueda: No se encuentra a la ficha objetivo.
+				else:
+					validaciones.append(False);
+			#	La celda no esta en el rango determinado.
+			else:
+				validaciones.append(False);
+
+			#	Validación: Buscar ficha hacia abajo.
+			fila_auxiliar = (fila + 1);
+
+			#	Rango para celdas dentro del tablero.
+			if (fila_auxiliar < 5 and fila_auxiliar > 0):
+				#	Busqueda: Ficha objetivo.
+				if (tablero[fila_auxiliar][columna] == jugador_objetivo):
+					for iterador in range((5 - fila_auxiliar)):
+						#	Busqueda: Ficha jugador.
+						if (tablero[(fila_auxiliar + iterador + 1)][(columna)] == jugador):
+							#	Recordatorio: editar aquí para insertar la IA.
+							if (puede_editar):
+								self.convertir_fichas(fila, (fila_auxiliar + iterador + 1), columna, columna, "ABAJO");
+
+							elif not (puede_editar):
+								print("[DEV][GAME][validacion_jugadas] Se valido la jugada pero no se edito.");
+							else:
+								print("[DEV][GAME][ERROR][validacion_jugadas]");
+								print("[>] Error al verificar la edición del tablero.");
+							
+							#	Agregamos la validación a la lista de validaciones.
+							validaciones.append(True);
+
+				#	Busqueda: No se encuentra a la ficha objetivo.
+				else:
+					validaciones.append(False);
+			#	La celda no esta en el rango determinado.
+			else:
+				validaciones.append(False);
+
+			#	Validación: Buscar ficha hacia abajo-derecha.
+			fila_auxiliar = (fila + 1);
+			columna_auxiliar = (columna + 1);
+
+			#	Rango para celdas dentro del tablero.
+			if (fila_auxiliar < 5 and fila_auxiliar > 0) and (columna_auxiliar < 5 and columna_auxiliar > 0):
+				par = [(5 - fila_auxiliar), (5 - columna_auxiliar)];
+				rango = min(par);
+
+				#	Busqueda: Ficha objetivo.
+				if (tablero[fila_auxiliar][columna_auxiliar] == jugador_objetivo):
+					for iterador in range((rango)):
+						#	Busqueda: Ficha jugador.
+						if (tablero[(fila_auxiliar + iterador + 1)][(columna_auxiliar + iterador + 1)] == jugador):
+							#	Recordatorio: editar aquí para insertar la IA.
+							if (puede_editar):
+								self.convertir_fichas(fila, (fila_auxiliar + iterador + 1), columna, (columna_auxiliar + iterador + 1), "ABAJO-DERECHA");
+
+							elif not (puede_editar):
+								print("[DEV][GAME][validacion_jugadas] Se valido la jugada pero no se edito.");
+							else:
+								print("[DEV][GAME][ERROR][validacion_jugadas]");
+								print("[>] Error al verificar la edición del tablero.");
+							
+							#	Agregamos la validación a la lista de validaciones.
+							validaciones.append(True);
+
+				#	Busqueda: No se encuentra a la ficha objetivo.
+				else:
+					validaciones.append(False);
+			#	La celda no esta en el rango determinado.
+			else:
+				validaciones.append(False);
+
+			#	Validación: Buscar ficha hacia abajo-izquierda.
+			fila_auxiliar = (fila + 1);
+			columna_auxiliar = (columna - 1);
+
+			#	Rango para celdas dentro del tablero.
+			if (fila_auxiliar < 5 and fila_auxiliar > 0) and (columna_auxiliar < 5 and columna_auxiliar > 0):
+				par = [(5 - fila_auxiliar), columna_auxiliar];
+				rango = min(par);
+
+				#	Busqueda: Ficha objetivo.
+				if (tablero[fila_auxiliar][columna_auxiliar] == jugador_objetivo):
+					for iterador in range((rango)):
+						#	Busqueda: Ficha jugador.
+						if (tablero[(fila_auxiliar + iterador + 1)][(columna_auxiliar - iterador - 1)] == jugador):
+							#	Recordatorio: editar aquí para insertar la IA.
+							if (puede_editar):
+								self.convertir_fichas(fila, (fila_auxiliar + iterador + 1), columna, (columna_auxiliar - iterador - 1), "ABAJO-IZQUIERDA");
+
+							elif not (puede_editar):
+								print("[DEV][GAME][validacion_jugadas] Se valido la jugada pero no se edito.");
+							else:
+								print("[DEV][GAME][ERROR][validacion_jugadas]");
+								print("[>] Error al verificar la edición del tablero.");
+							
+							#	Agregamos la validación a la lista de validaciones.
+							validaciones.append(True);
+
+				#	Busqueda: No se encuentra a la ficha objetivo.
+				else:
+					validaciones.append(False);
+			#	La celda no esta en el rango determinado.
+			else:
+				validaciones.append(False);
+
+			#	Comprobación de las validaciones.
+			if (True in validaciones):
+				#	Al menos una jugada es valida.
+				return True;
+
+			elif not(True in validaciones):
+				#	Ninguna jugada es valida.
+				return False;
+
+			else:
+				print("[DEV][GAME][ERROR][validacion_jugadas]");
+				print("[>] Error al determinar las verificaciones.");
+				return False;
+			
+		#	La celda no tiene adyacente.
+		elif (not(tiene_adyacente)):
+			return False;
+
+		#	Error: no se determino la adyacencia.
+		else:
+			print("[DEV][GAME][ERROR][validacion_jugadas]");
+			print("[>] Error al determinar el modo de convertir.");
+			return False;
+		
+
 	def realizar_vistazos(self, fila:int, columna:int, modo:str) -> bool:
 		"""..."""
 
 		#	Traemos el tablero.
-		print("[DEV] PRE GAME (realizar_vistazos):");
 		tablero = self.GET_estado_juego();
-		self.mostrar_tablero();
+		# self.mostrar_tablero();
 
 		#	Vistazo: Realiza un vistazo a la casilla de arriba.
 		if	(modo == "ARRIBA"):
@@ -35,7 +435,7 @@ class Juego():
 				return False;
 			#	Error: No se determina el vistazo.
 			else:
-				print("[DEV][GAME][ERROR][realizar_vistazos]");
+				print("[DEV][GAME][ERROR][realizar_vistazos][ARRIBA]");
 				print("[>] Error al realizar el vistazo hacia arriba.");
 				return False;
 		
@@ -49,7 +449,7 @@ class Juego():
 				return False;
 			#	Error: No se determina el vistazo.
 			else:
-				print("[DEV][GAME][ERROR][realizar_vistazos]");
+				print("[DEV][GAME][ERROR][realizar_vistazos][ARRIBA-DERECHA]");
 				print("[>] Error al realizar el vistazo hacia arriba a la derecha.");
 				return False;
 		
@@ -63,7 +463,7 @@ class Juego():
 				return False;
 			#	Error: No se determina el vistazo.
 			else:
-				print("[DEV][GAME][ERROR][realizar_vistazos]");
+				print("[DEV][GAME][ERROR][realizar_vistazos][ARRIBA-IZQUIERDA]");
 				print("[>] Error al realizar el vistazo hacia arriba a la izquierda.");
 				return False;
 
@@ -77,7 +477,7 @@ class Juego():
 				return False;
 			#	Error: No se determina el vistazo.
 			else:
-				print("[DEV][GAME][ERROR][realizar_vistazos]");
+				print("[DEV][GAME][ERROR][realizar_vistazos][CENTRO-DERECHA]");
 				print("[>] Error al realizar el vistazo hacia la derecha.");
 				return False;
 
@@ -91,7 +491,7 @@ class Juego():
 				return False;
 			#	Error: No se determina el vistazo.
 			else:
-				print("[DEV][GAME][ERROR][realizar_vistazos]");
+				print("[DEV][GAME][ERROR][realizar_vistazos][CENTRO-IZQUIERDA]");
 				print("[>] Error al realizar el vistazo hacia la izquierda.");
 				return False;
 
@@ -105,7 +505,7 @@ class Juego():
 				return False;
 			#	Error: No se determina el vistazo.
 			else:
-				print("[DEV][GAME][ERROR][realizar_vistazos]");
+				print("[DEV][GAME][ERROR][realizar_vistazos][ABAJO]");
 				print("[>] Error al realizar el vistazo hacia abajo.");
 				return False;
 
@@ -119,7 +519,7 @@ class Juego():
 				return False;
 			#	Error: No se determina el vistazo.
 			else:
-				print("[DEV][GAME][ERROR][realizar_vistazos]");
+				print("[DEV][GAME][ERROR][realizar_vistazos][ABAJO-DERECHA]");
 				print("[>] Error al realizar el vistazo hacia abajo a la derecha.");
 				return False;
 
@@ -133,7 +533,7 @@ class Juego():
 				return False;
 			#	Error: No se determina el vistazo.
 			else:
-				print("[DEV][GAME][ERROR][realizar_vistazos]");
+				print("[DEV][GAME][ERROR][realizar_vistazos][ABAJO-IZQUIERDA]");
 				print("[>] Error al realizar el vistazo hacia abajo a la izquierda.");
 				return False;
 
@@ -146,6 +546,7 @@ class Juego():
 
 	def comprobar_tiene_adyacente(self, coordenadas:Tuple[int,int]) -> bool:
 		"""..."""
+
 		#	Variables locales.
 		fila:int = coordenadas[0];
 		columna:int = coordenadas[1];
@@ -153,7 +554,7 @@ class Juego():
 		#	Traemos el estado del juego.
 		tablero:Any = self.GET_estado_juego()
 		print("[DEV] PRE GAME (comprobar_tiene_adyacente):");
-		self.mostrar_tablero()
+		# self.mostrar_tablero();
 
 		#	Verificación: Revisar Fichas que estan en el centro del tablero.
 		if (((fila < 5) and (fila > 0)) and ((columna < 5) and (columna > 0))):
@@ -320,10 +721,12 @@ class Juego():
 			return False;
 			
 
-	def comprobar_finalizacion(self) -> bool:
+	def comprobar_finalizacion(self, coordenadas:Tuple[int,int]) -> bool:
 		"""..."""
 
 		#	Traemos el estado del juego.
+		fila:int = coordenadas[0];
+		columna:int = coordenadas[1];
 		tablero = self.GET_estado_juego();
 
 		#	CASO 1: No quedan casillas vacias.
@@ -334,7 +737,10 @@ class Juego():
 
 		#	CASO 2: No quedan más movimientos para la ficha blanca.
 		#	CASO 3: No quedan más movimientos para la ficha negra.
-
+		elif (self.validacion_jugadas((fila, columna))):
+			print("[DEV][GAME][comprobar_finalizacion] quedan movimientos.")
+			self.SET_terminado(False);
+			return False;
 
 		else:
 			#	Se retorna False dado que, el juego NO termino.
@@ -352,12 +758,17 @@ class Juego():
 		print(f"[DEV][GAME] Iniciando la jugabilidad...")	
 		columna:int = coordenadas[0];
 		fila:int = coordenadas[1];
+		print(f"[DEV][GAME][iniciar_jugabilidad] fila: {fila}, columna: {columna}")
+
+		#	Definiendo la edición.
+		#	Se configura como False, dado que no puede editar el tablero antes de jugar el turno.
+		self.SET_puede_editar(False);
 
 		#	Definiendo de quien es el turno.
 		self.SET_jugador(color_ficha);
 
 		#	Comprobar si el juego termino.
-		esta_terminado:bool = self.comprobar_finalizacion();
+		esta_terminado:bool = self.comprobar_finalizacion((fila, columna));
 		esta_vacia:bool = self.comprobar_vacia((fila, columna));
 
 		#	Comprobaciones: Determinar si se puede o no jugar...
@@ -381,25 +792,33 @@ class Juego():
 					print("[DEV] La celda tiene adyancente, procediendo a la siguiente comprobación.");
 
 					#	Comprobación: La casilla seleccionada es una jugada valida.
+					if (self.validacion_jugadas(coordenadas=(fila, columna))):
+						#	De prueba:
+						# nuevo_tablero = self.GET_estado_juego();
+						# nuevo_tablero[fila][columna] = color_ficha;
+						# self.SET_estado_juego(nuevo_tablero);
 
-					nuevo_tablero = self.GET_estado_juego();
-					nuevo_tablero[fila][columna] = color_ficha;
-					self.SET_estado_juego(nuevo_tablero);
+						#	Se habilita la edición.
+						self.SET_puede_editar(True);
+						validacion = self.validacion_jugadas(coordenadas=(fila, columna));
 
-					print("[DEV] POST GAME");
-					self.mostrar_tablero();
+						#	Se deshabilita la edición.
+						self.SET_puede_editar(False);
 
-					#	Realizar cambio de turnos.
-					turnos:List[bool] = self.GET_turnos();
-					nuevos_turnos:List[bool] = [not(turnos[0]), not(turnos[1])];
-					self.SET_turnos(nuevos_turnos);
+						print("[DEV] POST GAME");
+						# self.mostrar_tablero();
 
-					#	Re-Comprobación: Verificar si el juego termino. Para actualizar la GUI.
-					esta_terminado = self.comprobar_finalizacion();
-					if (esta_terminado):
-						print("[DEV][GAME][POST-GAME] el juego termino.");
-					elif not (esta_terminado):
-						print("[DEV][GAME][POST-GAME] el juego no termino.");
+						#	Realizar cambio de turnos.
+						turnos:List[bool] = self.GET_turnos();
+						nuevos_turnos:List[bool] = [not(turnos[0]), not(turnos[1])];
+						self.SET_turnos(nuevos_turnos);
+
+						#	Re-Comprobación: Verificar si el juego termino. Para actualizar la GUI.
+						esta_terminado = self.comprobar_finalizacion((fila, columna));
+						if (esta_terminado):
+							print("[DEV][GAME][POST-GAME] el juego termino.");
+						elif not (esta_terminado):
+							print("[DEV][GAME][POST-GAME] el juego no termino.");
 
 				elif (tiene_adyacente == False):
 					#	Se vuelve al tablero.
@@ -444,6 +863,13 @@ class Juego():
 		print("-"*12);
 
 	#	Getters & Setters.
+	#		PUEDE_EDITAR
+	def GET_puede_editar(self) -> bool:
+		return self.PUEDE_EDITAR;
+
+	def SET_puede_editar(self, nueva_configuracion:bool) -> None:
+		self.PUEDE_EDITAR = nueva_configuracion;
+
 	#		TURNOS.
 	def GET_turnos(self) -> List[bool]:
 		return self.TURNOS;

@@ -158,11 +158,17 @@ class Reversi:
 		if self.Es_adyacente(coordenada):
 			# Buscamos una ficha negra a la derecha
 			aux = columna+1
+			print(f"fila:{fila}, columna:{columna}")
 			if aux < 5 and aux > 0:
+				#	Ficha blanca
 				if self.ESTADO_JUEGO[fila][aux] == 1:
+
 					for i in range(5-aux):
+						#	Ficha negra.
 						if self.ESTADO_JUEGO[fila][aux+i+1] == 2:
+
 							if not self.generando_jugadas:
+								print(f"fi: {fila}, ff: {fila}, ci:{aux}, cf:{aux+i+1}, modo:cde")
 								self.Convertir(fila,fila,aux,aux+i+1,"cde",2)
 							v1 = True
 				else:
@@ -177,6 +183,7 @@ class Reversi:
 					for i in range(aux):
 						if self.ESTADO_JUEGO[fila][aux-i-1]==2:
 							if not self.generando_jugadas:
+								print(f"fi: {fila}, ff: {fila}, ci:{aux}, cf:{aux+i+1}, modo:ciz")
 								self.Convertir(fila,fila,aux,aux-i-1,"ciz",2)
 							v2=True
 				else:
@@ -293,37 +300,52 @@ class Reversi:
 		# y1 : columna_inicio
 		# y2 : columna_destino
 
+		#	convertir derecha.
 		if modo=="cde":
 			while y1!=y2:
 				self.ESTADO_JUEGO[x1][y1]=color
 				y1=y1+1
+			
+		#	convertir izquierda.
 		elif modo=="ciz":
 			while y1!=y2:
 				self.ESTADO_JUEGO[x1][y1]=color
 				y1=y1-1
+
+		#	convertir arriba.
 		elif modo=="arc":
 			while x1!=x2:
 				self.ESTADO_JUEGO[x1][y1]=color
 				x1=x1-1
+
+		#	convertir abajo.
 		elif modo=="abc":
 			while x1!=x2:
 				self.ESTADO_JUEGO[x1][y1]=color
 				x1=x1+1
+
+		#	convertir arriba-derecha
 		elif modo=="arde":
 			while x1!=x2:
 				self.ESTADO_JUEGO[x1][y1]=color
 				x1=x1-1
 				y1=y1+1
+
+		#	convertir arriba-izquierda
 		elif modo=="ariz":
 			while x1!=x2:
 				self.ESTADO_JUEGO[x1][y1]=color
 				x1=x1-1
 				y1=y1-1
+
+		#	convertir abajo-derecha
 		elif modo=="abde":
 			while x1!=x2:
 				self.ESTADO_JUEGO[x1][y1]=color
 				x1=x1+1
 				y1=y1+1
+
+		#	convertir abajo-izquierda
 		elif modo=="abiz":
 			while x1!=x2:
 				self.ESTADO_JUEGO[x1][y1]=color
