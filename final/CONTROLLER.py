@@ -41,7 +41,7 @@ class Controlador():
 
 		#	Montando la interfaz grafica.
 		self.log("Iniciando la interfaz grafica");
-		Grafica.controlador_ventana(partida=Reversi);
+		Grafica.controlador_ventana(partida=Reversi, inteligencia=IA);
 
 	#	Getters & Setters.
 	#		INTELIGENCIA.

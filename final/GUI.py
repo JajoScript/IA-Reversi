@@ -369,12 +369,12 @@ class Interfaz():
 		self.SET_numero_fichas(2, numero_fichas_negras);
 
 
-	def controlador_ventana(self, partida) -> None:
+	def controlador_ventana(self, partida:Any, inteligencia:Any) -> None:
 		"""..."""
 
 		#	Definimos como propiedad la partida.
-		print(f"[DEV][GUI] partida 309: {partida}")
 		self.SET_partida(partida);
+		partida.SET_inteligencia(inteligencia);
 
 		#	Definimos un estado inicial para la dificultad.
 		#	Esta configuración es para que al comenzar el juego, la IA este definida como Facil.

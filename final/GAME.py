@@ -791,11 +791,6 @@ class Juego():
 
 					#	Comprobación: La casilla seleccionada es una jugada valida.
 					if (self.validacion_jugadas(coordenadas=(fila, columna))):
-						#	De prueba:
-						# nuevo_tablero = self.GET_estado_juego();
-						# nuevo_tablero[fila][columna] = color_ficha;
-						# self.SET_estado_juego(nuevo_tablero);
-
 						#	Se habilita la edición.
 						self.SET_puede_editar(True);
 						validacion = self.validacion_jugadas(coordenadas=(fila, columna));
@@ -856,12 +851,19 @@ class Juego():
 		for fila in tablero:
 				print("|", end="");
 				for elemento in fila:
-					 print(str(elemento) + " |", end="");
+					 print(str(int(elemento)) + " |", end="");
 				print(end="\n");
 		print("-"*12);
 
 	#	Getters & Setters.
-	#		PUEDE_EDITAR
+	#		INTELIGENCIA ARTIFICIAL.
+	def GET_inteligencia(self) -> Any:
+		return self.INTELIGENCIA;
+
+	def SET_inteligencia(self, nueva_ia:Any) -> None:
+		self.INTELIGENCIA = nueva_ia;
+	
+	#		PUEDE_EDITAR.
 	def GET_puede_editar(self) -> bool:
 		return self.PUEDE_EDITAR;
 
