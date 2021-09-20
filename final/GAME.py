@@ -57,7 +57,6 @@ class Juego():
 				print(f"columna_inicial: {columna_inicial}")
 				tablero[(fila_inicial)][(columna_inicial)] = jugador;
 				columna_inicial = (columna_inicial + 1);
-			self.mostrar_tablero();
 		
 		#	Convertir: Convertir fichas hacia la izquierda.
 		elif (modo == "CENTRO-IZQUIERDA"):
@@ -66,7 +65,6 @@ class Juego():
 				print(f"columna_inicial: {columna_inicial}")
 				tablero[(fila_inicial)][(columna_inicial)] = jugador;
 				columna_inicial = (columna_inicial - 1);
-			self.mostrar_tablero();
 
 		#	Convertir: Convertir fichas hacia abajo.
 		elif (modo == "ABAJO"):

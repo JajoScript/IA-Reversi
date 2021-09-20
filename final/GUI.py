@@ -278,7 +278,8 @@ class Interfaz():
 
 		#	Definimos los turnos.
 		nuevos_turnos = [False, True]; # [0] ficha blanca. [0] Ficha Negra.
-		self.SET_turnos(nuevos_turnos)
+		self.SET_terminado(False);
+		self.SET_turnos(nuevos_turnos);
 
 
 	def activar_boton_pista(self) -> None:
