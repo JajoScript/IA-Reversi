@@ -283,11 +283,13 @@ class Interfaz():
 
 	def activar_boton_pista(self) -> None:
 		"""..."""
+		
 		print("[DEV][GUI] Se pulso el boton de pista!");
 		pass
 
 	def activar_boton_repositorio(self) -> None:
 		"""..."""
+
 		try:
 			print("[DEV][GUI] abriendo el repositorio en el navegador...");
 			webbrowser.open("https://github.com/JajoScript/IA-Reversi", new=2, autoraise=True);
