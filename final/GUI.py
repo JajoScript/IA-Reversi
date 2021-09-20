@@ -455,6 +455,7 @@ class Interfaz():
 						if(turnos[0]):
 							print("[DEV][GUI] Jugada de ficha: blanca.");
 							partida.iniciar_jugabilidad((indice_x, indice_y), color_ficha=1);
+							#EN TEORIA AQUI SE APLICABA LA IA
 							
 						elif (turnos[1]):
 							print("[DEV][GUI] Jugada de ficha: negra.");
