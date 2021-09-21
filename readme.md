@@ -1,6 +1,41 @@
 # Reversi IA
 
 ---
+## Resumen e inicio del programa.
+En esta serie de pasos usted podra descargar y correr nuestro juego Reversi.
+
+PASO 0: Clonar el repositorio (SSH o HTTPS):
+```bash
+	$git clone https://github.com/JajoScript/IA-Reversi.git
+	$git clone git@github.com:JajoScript/IA-Reversi.git
+```
+
+PASO 1: Entrar al repositorio clonado.
+```bash
+	$cd IA-Reversi\
+```
+
+PASO 2: Crear un entorno de desarrollo.
+```bash
+	$py -m venv env
+```
+
+PASO 3: Activar el entorno de desarrollo.
+```bash
+	$env\Scripts\activate.bat
+```
+
+PASO 4: Instalar las dependencias necesarias para correr el programa.
+```bash
+	$pip install -r requirements.txt
+```
+
+PASO 5: Ejecutar el paquete **src**.
+```bash
+	$py src\
+```
+
+---
 ## Introducción y buenas practicas
 
 ---
@@ -14,11 +49,9 @@ Para funcionalidad y control de tipado es necesaria una versión de python
 
 *  Pyton ^3.6.x
 
-
 ---
 ## Entorno de desarrollo
-
-Generación de un entorno de desarrollo con python
+Generación de un entorno de desarrollo con python.
 ```bash
 	$py -m venv env/
 ```
@@ -26,12 +59,12 @@ Generación de un entorno de desarrollo con python
 ### Verificación de archivos
 
 ```bash
-	$mypy --config-file .mypy.ini <dir>
-	$mypy --config-file .mypy.ini <dir> --html-report <dir>\__test__
+	$mypy --config-file .mypy.ini src/
+	$mypy --config-file .mypy.ini src/ --html-report src/__test__/
 ```
 
-
 ## Aquitectura del directorio.
+En el siguiente apartado se describen los distintos archivos presentes en el proyecto.
 
 ```py
 	__init__.py
@@ -57,60 +90,6 @@ Generación de un entorno de desarrollo con python
 	GAME.py
 	# Archivo destinado a la jugabilidad del programa.
 ```
-
----
-## Ejecución y uso
-
-Clonar el repositorio:
-```bash
-	$git clone https://github.com/JajoScript/IA-Reversi.git
-	$git clone git@github.com:JajoScript/IA-Reversi.git
-```
-
-Instalar las dependencias (recuerda crear antes un entorno de desarrollo):
-```bash
-	$py pip install -r requirements.txt
-```
-
-Iniciar la ejecución:
-```bash
-	$py src/
-```
-
----
-## Funcionalidad
-Apartado con el fin de entregar contexto a las funcionalidades de cada una de las implementaciones dentro del proyecto.
-
-### Objetos
-```python
-class test():
-	""" ... """
-```
-
-### Funciones
-```python
-def test() -> None:
-	""" ... """
-```
-*  Uso:
-*  Parametros:
-*  Retorna:
-
-```python
-def mostrarVentana() -> None:
-	""" ... """
-```
-*  Uso: Función utilizada para crear/renderizar la ventana del juego.
-*  Parametros: Ninguno.
-*  Retorna: Nada.
-
-```python
-def cargarAssets(nombre_archivo: str, transparencia: bool = False) -> typing.Any:
-""" ... """
-```
-*  Uso: Realiza la carga de una recurso (*jpg, jpeg, png, etc*) para ser utilizada dentro de la ventana del juego.
-*  Parametros: Es necesario el nombre del archivo junto con el parametro transparencia, parametro asignado para definir si debe o no ser transparente el fondo de la imagen (casos para recursos **.png**).
-*  Retorna: Nada.
 
 ---
 ## Colaboradores
