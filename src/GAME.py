@@ -1,644 +1,505 @@
-# Dependencias.
-from typing import Any
+import copy
 
-# Definición de funciones.
-#Retorna verdadero si aun hay casillas por jugar en el tablero
-def controlador_tablero_lleno(estado_juego) -> bool:
-	
-	celdas_vacias:int = 0
-	for fila in estado_juego:
-		celdas_vacias += fila.count(0);
-	
-	# Caso 1: no quedan celdas vacias.
-	if celdas_vacias == 0:
-		print("[DEV] NO QUEDAN CELDAS VACIAS.");
-		return False;
+class Reversi:
 
-	# Caso 2: quedan celdas vacias.
-	elif celdas_vacias != 0:
-		print("[DEV] QUEDAN CELDAS VACIAS.");
-		return True;
+	def __init__(self,tablero:list) -> None:
 
-def controlador_turnos(estado_juego, coordenadas, TURNO_BLANCA: bool, TURNO_NEGRA:bool):
-	""" ... """
-	print("[DEV] funcionalidad ...")
-	print(f"[DEV] turnos: [blancas][negras] {TURNO_BLANCA}, {TURNO_NEGRA}")
+		#Lista de listas que representa el tablero, la entrega la GUI
+		self.tablero= tablero
 
-	# Validación de turnos.
-	if (TURNO_NEGRA):
-		print("[DEV] va a jugar negra");
+		#Booleano que indica si todas las casillas han sido ocupadas o si ya no se pueden realizar mas jugadas
+		self.completo= False
 
-	elif (TURNO_BLANCA):
-		print("[DEV] va a jugar blanca");
+		#Entero que indica la ganancia de cierto estado final, se calcula como negras-blancas
+		self.utilidad= None
 
+		#Booleano que restringe la funcion convertir, para verificar si una jugada es valida sin aplicarla
+		self.generando_jugadas=False
 
-	# Controlador tablero lleno.
-	if (controlador_tablero_lleno(estado_juego)):
-		# Controla fichas negras.
-		if (TURNO_NEGRA) and (controlador_vacias(estado_juego, coordenadas)) and (controlador_adyacentes(estado_juego, coordenadas)) and (validacion_movimiento_negras(estado_juego, coordenadas)):
-			print("[DEV] Acaba de jugar negra");
+		#Enetero que representa el nivel de profundidad que usara el minimax o el alfabeta
+		self.dificultad=None
 
-			estado_juego[coordenadas[0]][coordenadas[1]] = 2;
-			TURNO_NEGRA = not(TURNO_NEGRA);
-			TURNO_BLANCA = not(TURNO_BLANCA);
+	def Permite_salto(self,coordenada:list,color:int) -> bool:
 
-			return [TURNO_BLANCA, TURNO_NEGRA];
-
-		# Controla fichas blancas.
-		elif (TURNO_BLANCA) and (controlador_vacias(estado_juego, coordenadas)) and (controlador_adyacentes(estado_juego, coordenadas)) and (validacion_movimiento_blancas(estado_juego, coordenadas)):
-			print("[DEV] Acaba de jugar blanca");
-
-			estado_juego[coordenadas[0]][coordenadas[1]] = 1;
-			TURNO_NEGRA = not(TURNO_NEGRA);
-			TURNO_BLANCA = not(TURNO_BLANCA);
-
-			return [TURNO_BLANCA, TURNO_NEGRA];
-
-		# Movimientos invalidos.
-		else:
-			print("[DEV] movimiento invalido!");
-			return [TURNO_BLANCA, TURNO_NEGRA];
-	
-	else:
-		print("[DEV] no quedan fichas disponibles.");
-		return [False, False]
-
-def validacion_movimiento_blancas(estado_juego, coordenadas) -> bool:
-	""" ... """
-	print("[DEV] EJECUTANDO: validacion_movimiento blancas.....");
-
-	fila: int = coordenadas[0];
-	columna:int = coordenadas[1];
-
-	# Validaciones.
-	# Recordatorio: Esto se puede simplificar con un arreglo definido.
-	validacion_1:bool = False;
-	validacion_2:bool = False;
-	validacion_3:bool = False;
-	validacion_4:bool = False;
-	validacion_5:bool = False;
-	validacion_6:bool = False;
-	validacion_7:bool = False;
-	validacion_8:bool = False;
-
-	if (controlador_adyacentes(estado_juego, coordenadas)):
-		# Busqueda: Ficha negra a la derecha.
-		auxiliar:int = columna + 1;
-
-		if (auxiliar < 5) and (auxiliar > 0):
-			if estado_juego[fila][auxiliar] == 2:
-				for i in range(5 - auxiliar):
-					if (estado_juego[fila][auxiliar + i + 1] == 1):
-						controlador_convertir_fichas(estado_juego, fila, fila, auxiliar, (auxiliar + i + 1), "cde", 1)
-						validacion_1 = True;
-			else:
-				validacion_1 = False;
-		else:
-			validacion_1 = False
-
-		# Busqueda: Ficha Negra a la izquierda.
-		auxiliar = columna - 1;
-
-		if (auxiliar < 5) and (auxiliar > 0):
-			if (estado_juego[fila][auxiliar] == 2):
-				for i in range(auxiliar):
-					if (estado_juego[fila][auxiliar - i - 1] == 1):
-						controlador_convertir_fichas(estado_juego, fila, fila, auxiliar, (auxiliar - i - 1), "ciz", 1);
-						validacion_2 = True;
-			else:
-				validacion_2 = False;
-		else: 
-			validacion_2 = False;
-
-		# Busqueda: Ficha negra abajo.
-		auxiliar = fila + 1;
-
-		if (auxiliar < 5) and (auxiliar > 0):
-			if (estado_juego[auxiliar][columna] == 2):
-				for i in range(5 - auxiliar):
-					if (estado_juego[auxiliar + i + 1][columna] == 1):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar + i + 1), columna, columna, "abc", 1);
-						validacion_3 = True;
-			else:
-				validacion_3 = False;
-		else: 
-			validacion_3 = False;
-
-		# Busqueda: Ficha negra arriba.
-		auxiliar = fila - 1;
-
-		if (auxiliar < 5) and (auxiliar > 0):
-			if (estado_juego[auxiliar][columna] == 2):
-				for i in range(auxiliar):
-					if (estado_juego[(auxiliar - i - 1)][columna] == 1):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar - i - 1), columna, columna, "arc", 1);
-						validacion_4 = True;
-			else:
-				validacion_4 = False;
-		else: 
-			validacion_4 = False;
-
-		# Busqueda: Ficha negra diagonal arriba derecha.
-		auxiliar = (fila - 1);
-		auxiliar_2:int = (columna + 1);
-
-		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2 > 0):
-			par:list[int] = [auxiliar, (5 - auxiliar_2)];
-			rango = min(par);
+		"""Esta funcion evalua si al posicionar una ficha en la coordenada de tablero pasada como parametro es posible saltar 
+			al menos una ficha del rival. Para esto se evaluan las 8 direcciones posibles hasta llegar al limite del tablero
+			en busca de una o varias fichas del color contrario seguidas por una ficha del color que se pase como parametro.
 			
-			if estado_juego[auxiliar][auxiliar_2]==2:
-				for i in range(rango):
-					if (estado_juego[(auxiliar - i - 1)][(auxiliar_2 + i + 1)] == 1):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar - i- 1), columna, (auxiliar_2 + i + 1), "arde",1)
-						validacion_5 = True;
-			else:
-				validacion_5 = False;
-		else:
-			validacion_5 = False;
+			En caso de encontrar dicha situacion, la funcion convertira automaticamente todas las fichas del color contrario al color
+			pasado como parametro. Una vez analizadas las 8 direcciones la funcion retornara verdadero si en al menos una direccion se pudo realizar
+			el salto, de lo contrario retornara falso"""
 
-		# Busqueda: Ficha negra diagonal arriba izquierda.
-		auxiliar = (fila - 1);
-		auxiliar_2 = (columna - 1);
+		#coordenadas
+		fila = coordenada[0]
+		columna = coordenada[1]
 
-		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2 > 0):
-			par = [auxiliar, auxiliar_2];
-			rango = min(par);
+		#lista de direciones en las que se podia saltar
+		key=[False]*8
 
-			if (estado_juego[auxiliar][auxiliar_2] == 2):
-				for i in range(rango):
-					if (estado_juego[(auxiliar - i - 1)][auxiliar_2 - i - 1] == 1):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar - i - 1), columna, (auxiliar_2 - i - 1), "ariz", 1)
-						validacion_6 = True;
-			else:
-				validacion_6 = False;
-		else:
-			validacion_6 = False;
+		#La coordenada en donde se desea posicionar la ficha debe ser adyacente a alguna ficha ya puesta
+		if self.Es_adyacente(coordenada):
 
-		# Busqueda: Ficha negra diagonal abajo derecha.
-		auxiliar = (fila + 1);
-		auxiliar_2 = (columna + 1);
+			#Por cada direccion se analiza si permite el salto
 
-		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2 > 0):
-			par = [ (5 - auxiliar), (5 - auxiliar_2)];
-			rango = min(par);
+			#abajo
+			aux = columna+1
+			if aux<5 and aux>0:
+				if color==1:
+					if self.tablero[fila][aux]==2:
+						for i in range(5-aux):
+							if self.tablero[fila][aux+i+1]==1:
+								if not self.generando_jugadas:
+									self.Convertir([fila,aux],[fila,aux+i+1],"derecha",1)
+								key[0]=True
+				if color==2:
+					if self.tablero[fila][aux]==1:
+						for i in range(5-aux):
+							if self.tablero[fila][aux+i+1]==2:
+								if not self.generando_jugadas:
+									self.Convertir([fila,aux],[fila,aux+i+1],"derecha",2)
+								key[0]=True
+			#arriba
+			aux = columna-1
+			if aux<5 and aux>0:
+				if color==1:
+					if self.tablero[fila][aux]==2:
+						for i in range(aux):
+							if self.tablero[fila][aux-i-1]==1:
+								if not self.generando_jugadas:
+									self.Convertir([fila,aux],[fila,aux-i-1],"izquierda",1)
+								key[1]=True
+				if color==2:
+					if self.tablero[fila][aux]==1:
+						for i in range(aux):
+							if self.tablero[fila][aux-i-1]==2:
+								if not self.generando_jugadas:
+									self.Convertir([fila,aux],[fila,aux-i-1],"izquierda",2)
+								key[1]=True
+			#derecha
+			aux = fila+1
+			if aux<5 and aux>0:
+				if color==1:
+					if self.tablero[aux][columna]==2:
+						for i in range(5-aux):
+							if self.tablero[aux+i+1][columna]==1:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux+i+1,columna],"abajo",1)
+								key[2]=True
+				if color==2:
+					if self.tablero[aux][columna]==1:
+						for i in range(5-aux):
+							if self.tablero[aux+i+1][columna]==2:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux+i+1,columna],"abajo",2)
+								key[2]=True
+			#izquierda
+			aux = fila-1
+			if aux<5 and aux>0:
+				if color==1:
+					if self.tablero[aux][columna]==2:
+						for i in range(aux):
+							if self.tablero[aux-i-1][columna]==1:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux-i-1,columna],"arriba",1)
+								key[3]=True
+				if color==2:
+					if self.tablero[aux][columna]==1:
+						for i in range(aux):
+							if self.tablero[aux-i-1][columna]==2:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux-i-1,columna],"arriba",2)
+								key[3]=True
+			#abajo-izquerda
+			aux = fila-1
+			aux2 = columna+1
+			if aux<5 and aux>0 and aux2<5 and aux2>0:
+				par = [aux,5-aux2]
+				if color==1:
+					rango = min(par)
+					if self.tablero[aux][aux2]==2:
+						for i in range(rango):
+							if self.tablero[aux-i-1][aux2+i+1]==1:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux-i-1,aux2+i+1],"arriba-derecha",1)
+								key[4]=True
+				if color==2:
+					rango = min(par)
+					if self.tablero[aux][aux2]==1:
+						for i in range(rango):
+							if self.tablero[aux-i-1][aux2+i+1]==2:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux-i-1,aux2+i+1],"arriba-derecha",2)
+								key[4]=True
+
+			#arriba-izquierda
+			aux = fila-1
+			aux2 = columna-1
+			if aux<5 and aux>0 and aux2<5 and aux2>0:
+				par = [aux,aux2]
+				if color==1:
+					rango = min(par)
+					if self.tablero[aux][aux2]==2:
+						for i in range(rango):
+							if self.tablero[aux-i-1][aux2-i-1]==1:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux-i-1,aux2-i-1],"arriba-izquierda",1)
+								key[5]=True
+				if color==2:
+					rango = min(par)
+					if self.tablero[aux][aux2]==1:
+						for i in range(rango):
+							if self.tablero[aux-i-1][aux2-i-1]==2:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux-i-1,aux2-i-1],"arriba-izquierda",2)
+								key[5]=True
+			#abajo-derecha
+			aux = fila+1
+			aux2 = columna+1
+			if aux<5 and aux>0 and aux2<5 and aux2>0:
+				par = [5-aux,5-aux2]
+				if color==1:
+					rango = min(par)
+					if self.tablero[aux][aux2]==2:
+						for i in range(rango):
+							if self.tablero[aux+i+1][aux2+i+1]==1:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux+i+1,aux2+i+1],"abajo-derecha",1)
+								key[6]=True
+				if color==2:
+					rango = min(par)
+					if self.tablero[aux][aux2]==1:
+						for i in range(rango):
+							if self.tablero[aux+i+1][aux2+i+1]==2:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux+i+1,aux2+i+1],"abajo-derecha",2)
+								key[6]=True
+			#arriba-derecha
+			aux = fila+1
+			aux2 = columna-1
+			if aux<5 and aux>0 and aux2<5 and aux2>0:
+				par = [5-aux,aux2]
+				if color==1:
+					rango = min(par)
+					if self.tablero[aux][aux2]==2:
+						for i in range(rango):
+							if self.tablero[aux+i+1][aux2-i-1]==1:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux+i+1,aux2-i-1],"abajo-izquierd",1)
+								key[7]=True
+				if color==2:
+					rango = min(par)
+					if self.tablero[aux][aux2]==1:
+						for i in range(rango):
+							if self.tablero[aux+i+1][aux2-i-1]==2:
+								if not self.generando_jugadas:
+									self.Convertir([fila,columna],[aux+i+1,aux2-i-1],"abajo-izquierda",2)
+								key[7]=True
 			
-			if (estado_juego[auxiliar][auxiliar_2] == 2):
-				for i in range(rango):
-					if estado_juego[(auxiliar + i + 1)][auxiliar_2+i+1]==1:
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar + i + 1), columna, (auxiliar_2 + i + 1), "abde", 1)
-						validacion_7 = True;
+			if True in key:
+				return True
 			else:
-				validacion_7 = False;
+				return False
 		else:
-			validacion_7 = False;
+			return False
 
-		# Busqueda: Ficha negra diagonal abajo izquierda.
-		auxiliar = (fila + 1);
-		auxiliar_2 = (columna - 1);
-		
-		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2 > 0):
-			par = [5-auxiliar,auxiliar_2];
-			rango = min(par);
+	def Esta_vacia(self,coordenada:list) -> bool:
+
+		"""Esta funcion verifica si la coordenada del tablero en donde se desea poner una ficha no esta ocupada"""
+
+		if self.tablero[coordenada[0]][coordenada[1]] == 0:
+			return True
+		else:
+			return False
+
+	def Es_adyacente(self,coordenada:list) -> bool:
+
+		""" Verifica si alrededor de la coordenada de tablero donde se desea poner una ficha hay alguna otra ficha, si no es adyacente
+			se sabe de inmediato que tampoco permite el salto, por lo cual se considerara como jugada invalida.
 			
-			if (estado_juego[auxiliar][auxiliar_2] == 2):
-				for i in range(rango):
-					if (estado_juego[(auxiliar + i + 1)][(auxiliar_2 - i - 1)] == 1):
-						controlador_convertir_fichas(estado_juego, fila,(auxiliar + i + 1), columna, (auxiliar_2 - i - 1), "abiz", 1)
-						validacion_8 = True;
+			Retorna verdadero en caso de haber alguna ficha adyacente, independiente del color"""
+
+		x=coordenada[0] # FILA
+		y=coordenada[1] # COLUMNA
+
+		#Busqueda en el interior del tablero
+		if x<5 and x>0 and y<5 and y>0 :
+			if self.tablero[x+1][y]!=0:
+				return True
+			elif self.tablero[x-1][y]!=0:
+				return True
+			elif self.tablero[x+1][y+1]!=0:
+				return True
+			elif self.tablero[x-1][y-1]!=0:
+				return True
+			elif self.tablero[x+1][y-1]!=0:
+				return True
+			elif self.tablero[x-1][y+1]!=0:
+				return True
+			elif self.tablero[x][y+1]!=0:
+				return True
+			elif self.tablero[x][y-1]!=0:
+				return True
 			else:
-				validacion_8 = False;
-		else:
-			validacion_8 = False;
+				return False
 
-		# Analisis de validaciones.	
-		if (validacion_1) or (validacion_2) or (validacion_3) or (validacion_4) or (validacion_5) or (validacion_6) or (validacion_7) or (validacion_8):
-			print("[DEV] EJECUTANDO: validacion_movimiento blancas, retorno: true");
-			return True;
-		else:
-			print("[DEV] EJECUTANDO: validacion_movimiento blancas, retorno: false");
-			return False;
-	else:
-		print("[DEV] EJECUTANDO: validacion_movimiento blancas, retorno: false");
-		return False;
-
-def validacion_movimiento_negras(estado_juego, coordenadas) -> bool:
-	""" ... """
-	print("[DEV] EJECUTANDO: validacion_movimiento_negras.....");
-
-	fila:int = coordenadas[0];
-	columna: int = coordenadas[1];
-
-	validacion_1:bool = False; 
-	validacion_2:bool = False; 
-	validacion_3:bool = False; 
-	validacion_4:bool = False; 
-	validacion_5:bool = False; 
-	validacion_6:bool = False; 
-	validacion_7:bool = False; 
-	validacion_8:bool = False;
-
-	if controlador_adyacentes(estado_juego, coordenadas):
-		# Busqueda: Ficha negra derecha.
-		auxiliar:int = (columna + 1);
-
-		if (auxiliar < 5) and (auxiliar > 0):
-			if (estado_juego[fila][auxiliar] == 1):
-				for i in range(5 - auxiliar):
-					if estado_juego[fila][(auxiliar + i + 1)] == 2:
-						controlador_convertir_fichas(estado_juego, fila, fila, auxiliar, (auxiliar + i + 1), "cde", 2)
-						validacion_1 = True;
+		#Busqueda en los bordes del tablero
+		if x==5 and y>0 and y<5 :
+			if self.tablero[x-1][y]!=0:
+				return True
+			elif self.tablero[x-1][y-1]!=0:
+				return True
+			elif self.tablero[x-1][y+1]!=0:
+				return True
+			elif self.tablero[x][y+1]!=0:
+				return True
+			elif self.tablero[x][y-1]!=0:
+				return True
 			else:
-				validacion_1 = False;
-		else:
-			validacion_1 = False
+				return False
+		if x==0 and y>0 and y<5:
+			if self.tablero[x+1][y]!=0:
+				return True
+			elif self.tablero[x+1][y+1]!=0:
+				return True
+			elif self.tablero[x+1][y-1]!=0:
+				return True
+			elif self.tablero[x][y+1]!=0:
+				return True
+			elif self.tablero[x][y-1]!=0:
+				return True
+			else:
+				return False
+		if y==5 and x<5 and x>0:
+			if self.tablero[x+1][y]!=0:
+				return True
+			elif self.tablero[x-1][y]!=0:
+				return True
+			elif self.tablero[x-1][y-1]!=0:
+				return True
+			elif self.tablero[x+1][y-1]!=0:
+				return True
+			elif self.tablero[x][y-1]!=0:
+				return True
+			else:
+				return False
+		if y==0 and x<5 and x>0:
+			if self.tablero[x+1][y]!=0:
+				return True
+			elif self.tablero[x-1][y]!=0:
+				return True
+			elif self.tablero[x+1][y+1]!=0:
+				return True
+			elif self.tablero[x-1][y+1]!=0:
+				return True
+			elif self.tablero[x][y+1]!=0:
+				return True
+			else:
+				return False
 
-		# Busqueda: Ficha negra izquierda.
-		auxiliar = (columna - 1);
+		#busqueda en las esquinas del tablero
+		if x==0 and y==0:
+			if self.tablero[x+1][y]!=0:
+				return True
+			elif self.tablero[x+1][y+1]!=0:
+				return True
+			elif self.tablero[x][y+1]!=0:
+				return True
+			else:
+				return False
+		if x==0 and y==5:
+			if self.tablero[x+1][y]!=0:
+				return True
+			elif self.tablero[x+1][y-1]!=0:
+				return True
+			elif self.tablero[x][y-1]!=0:
+				return True
+			else:
+				return False
+		if x==5 and y==0:
+			if self.tablero[x-1][y]!=0:
+				return True
+			elif self.tablero[x-1][y+1]!=0:
+				return True
+			elif self.tablero[x][y+1]!=0:
+				return True
+			else:
+				return False
+		if x==5 and y==5:
+			if self.tablero[x-1][y]!=0:
+				return True
+			elif self.tablero[x-1][y-1]!=0:
+				return True
+			elif self.tablero[x][y-1]!=0:
+				return True
+			else:
+				return False
+
+	def Convertir(self,inicio:list,fin:list,direccion:str,color:int) -> None:
+
+		"""Esta funcion trabaja en conjunto con la funcion Permite_salto(), se encarga de transformar las fichas de un color al color que
+			se le pase como parametro, no realiza ningun tipo de analisi, solo realiza la transformacion"""
 		
-		if (auxiliar < 5) and (auxiliar > 0):
-			if (estado_juego[fila][auxiliar] == 1):
-				for i in range(auxiliar):
-					if (estado_juego[fila][(auxiliar - i - 1)] == 2):
-						controlador_convertir_fichas(estado_juego, fila, fila, auxiliar, (auxiliar - i - 1), "ciz", 2);
-						validacion_2 = True;
-			else:
-				validacion_2 = False;
-		else:
-			validacion_2 = False;
+		#coordenada de inicio
+		x1=inicio[0]
+		y1=inicio[1]
 
-		# Busqueda: Ficha negra abajo.
-		auxiliar = (fila + 1);
-		if (auxiliar < 5) and (auxiliar > 0):
-			if (estado_juego[auxiliar][columna] == 1):
-				for i in range((5 - auxiliar)):
-					if (estado_juego[(auxiliar + i + 1)][columna] == 2):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar + i + 1), columna, columna, "abc", 2);
-						validacion_3 = True;
-			else:
-				validacion_3 = False;
-		else:
-			validacion_3 = False;
+		#coordenada de destino
+		x2=fin[0]
+		y2=fin[1]
 
-		# Busqueda: Ficha negra arriba.
-		auxiliar = (fila - 1);
-		if (auxiliar < 5) and (auxiliar > 0):
-			if (estado_juego[auxiliar][columna] == 1):
-				for i in range(auxiliar):
-					if (estado_juego[(auxiliar - i - 1)][columna] == 2):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar - i - 1), columna, columna, "arc", 2);
-						validacion_4 = True;
-			else:
-				validacion_4 = False;
-		else:
-			validacion_4 = False;
+		if direccion=="derecha":
+			while y1!=y2:
+				self.tablero[x1][y1]=color
+				y1=y1+1
+		elif direccion=="izquierda":
+			while y1!=y2:
+				self.tablero[x1][y1]=color
+				y1=y1-1
+		elif direccion=="arriba":
+			while x1!=x2:
+				self.tablero[x1][y1]=color
+				x1=x1-1
+		elif direccion=="abajo":
+			while x1!=x2:
+				self.tablero[x1][y1]=color
+				x1=x1+1
+		elif direccion=="arriba-derecha":
+			while x1!=x2:
+				self.tablero[x1][y1]=color
+				x1=x1-1
+				y1=y1+1
+		elif direccion=="arriba-izquierda":
+			while x1!=x2:
+				self.tablero[x1][y1]=color
+				x1=x1-1
+				y1=y1-1
+		elif direccion=="abajo-derecha":
+			while x1!=x2:
+				self.tablero[x1][y1]=color
+				x1=x1+1
+				y1=y1+1
+		elif direccion=="abajo-izquierda":
+			while x1!=x2:
+				self.tablero[x1][y1]=color
+				x1=x1+1
+				y1=y1-1
 
-		# Busqueda: Ficha negra diagonal arriba derecha.
-		auxiliar = (fila - 1);
-		auxiliar_2:int = (columna + 1);
+	def Jugar(self,coordenada:list,color:int) -> bool:
+
+		"""Esta funcion sirve para posicionar la ficha en el tablero, utiliza las tres anteriores funciones para verificar que es
+			posible posicionar la ficha del color que se le pase como parametro"""
+
+		if color==2 and self.Esta_vacia(coordenada) and self.Es_adyacente(coordenada) and self.Permite_salto(coordenada,2):
+			self.tablero[coordenada[0]][coordenada[1]]=2
+			return True
+		elif color==1 and self.Esta_vacia(coordenada) and self.Es_adyacente(coordenada) and self.Permite_salto(coordenada,1):
+			self.tablero[coordenada[0]][coordenada[1]]=1
+			return True
+		else:
+			return False
+
+	def Generador_Jugadas_validas(self,color:int) -> list:
+
+		""" Esta funcion retornara una lista con las posibles jugadas para el color que se le pase como parametro
+			para hacerlo utiliza las funciones que usa la funcion Jugar() salvo la funcion convertir(), pues no queremos
+			modificar el tablero de juego mientras llenamos la lista"""
+
+		#Se fija esta variable en true para que la funcion Permite_salto() no convierta ninguna ficha del tablero
+		self.generando_jugadas=True
+		Jugadas_posibles=[]
+		if color==2:
+			for i in range(6):
+				for j in range(6):
+					if self.Esta_vacia([i,j]) and self.Es_adyacente([i,j]) and self.Permite_salto([i,j],2):
+						Jugadas_posibles.append([i,j])
+		elif color==1:
+			for i in range(6):
+				for j in range(6):
+					if self.Esta_vacia([i,j]) and self.Es_adyacente([i,j]) and self.Permite_salto([i,j],1):
+						Jugadas_posibles.append([i,j])
+		self.generando_jugadas=False
+		return Jugadas_posibles
+
+	def Evaluar(self,profundidad:int) -> None:
+
+		"""Esta funcion analiza el estado de juego en el algoritmo de minimax o alfabeta, ademas de calcular la utilidad de las
+			jugadas que se exploren"""		
+
+		if self.Tablero_completo(self.tablero) or profundidad == self.dificultad:
+			self.completo=True
+		else:
+			self.completo=False
+		blancas=0	#nº fichas blancas en el tablero
+		negras=0	#nº fichas negras en el tablero
 		
-		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2>0):
-			par:list[int] = [auxiliar, (5 - auxiliar_2)];
-			rango = min(par);
+		#si se completo el tablero o se alcanzo la profundidad deseada( minimax o alfabeta )
+		if self.completo:
+			for i in range(6):
+				for j in range(6):
+					if self.tablero[i][j]==1:
+						blancas=blancas+1
+					if self.tablero[i][j]==2:
+						negras=negras+1
+			self.utilidad=negras-blancas
 
-			if (estado_juego[auxiliar][auxiliar_2] == 1):
-				for i in range(rango):
-					if (estado_juego[auxiliar-i-1][(auxiliar_2 + i + 1)] == 2):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar - i - 1), columna, (auxiliar_2 + i + 1), "arde", 2)
-						validacion_5 = True;
-			else:
-				validacion_5 = False;
-		else:
-			validacion_5 = False;
-
-		# Busqueda: Ficha negra diagonal arriba izquierda.
-		auxiliar = (fila - 1);
-		auxiliar_2 = (columna - 1);
+	def Estado_final(self,profundidad:int) -> bool:
 		
-		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2 > 0):
-			par = [auxiliar, auxiliar_2];
-			rango = min(par)
-			
-			if (estado_juego[auxiliar][auxiliar_2] == 1):
-				for i in range(rango):
-					if (estado_juego[(auxiliar - i - 1)][(auxiliar_2 - i - 1)] == 2):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar - i - 1), columna, (auxiliar_2 - i - 1), "ariz", 2);
-						validacion_6 = True;
-			else:
-				validacion_6 = False;
+		""" Esta funcion es utilizada por el algoritmo de minimax y alfabeta, sirve para reconocer si se ha llegado a un estado
+			terminal, o en este caso, se alcanzo la profundidad deseada, la profundidad dependera de la dficultad"""
+
+		self.Evaluar(profundidad)
+		if self.completo:
+			return True
 		else:
-			validacion_6 = False;
+			return False
 
-		# Busqueda: Ficha negra diagonal descendente derecha.
-		auxiliar = (fila + 1);
-		auxiliar_2 = (columna + 1);
-		
-		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2 > 0):
-			par = [(5 - auxiliar), (5 - auxiliar_2)];
-			rango = min(par);
+	def Devolver_estado(self,estado:list) -> None:
+		"""Se utiliza en el algoritmo de minimax o alfabeta, permite devolver el tablero de juego al estado previo del analisis de jugada"""
+		for i in range(6):
+			for j in range(6):
+				#Usamos deepcopy para que el minimax o el alfabeta realice cambios en copias y no en el tablero
+				self.tablero[i][j]=copy.deepcopy(estado[i][j])
 
-			if (estado_juego[auxiliar][auxiliar_2] == 1):
-				for i in range(rango):
-					if (estado_juego[(auxiliar + i + 1)][(auxiliar_2 + i + 1)] == 2):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar + i + 1), columna, (auxiliar_2 + i + 1), "abde", 2)
-						validacion_7 = True;
-			else:
-				validacion_7 = False;
+	def Puede_jugar(self,jugador:int) -> bool:
+		"""Evalua si el jugador puede seguir jugando dada determinado estado del tablero"""
+		jugadas_posibles=[]
+		if jugador==1:
+			jugadas_posibles=self.Generador_Jugadas_validas(1)
 		else:
-			validacion_7 = False;
-
-		# Busqueda: Ficha negra diagonal descendente izquierda.
-		auxiliar = (fila + 1);
-		auxiliar_2 = (columna - 1);
-		
-		if (auxiliar < 5) and (auxiliar > 0) and (auxiliar_2 < 5) and (auxiliar_2 > 0):
-			par = [(5 - auxiliar),auxiliar_2];
-			rango = min(par);
-			
-			if (estado_juego[auxiliar][auxiliar_2] == 1):
-				for i in range(rango):
-					if (estado_juego[(auxiliar + i + 1)][(auxiliar_2 - i - 1)] == 2):
-						controlador_convertir_fichas(estado_juego, fila, (auxiliar + i + 1), columna, (auxiliar_2 - i - 1), "abiz", 2);
-						validacion_8 = True;
-			else:
-				validacion_8 = False;
+			jugadas_posibles=self.Generador_Jugadas_validas(2)
+		if len(jugadas_posibles)==0:
+			return False
 		else:
-			validacion_8 = False;
+			return True
 
-		# Analisis de validaciones.		
-		if (validacion_1) or (validacion_2) or (validacion_3) or (validacion_4) or (validacion_5) or (validacion_6) or (validacion_7) or (validacion_8):
-			print("[DEV] EJECUTANDO: validacion_movimiento_negras, retorno: true");
-			return True;
-		else:
-			print("[DEV] EJECUTANDO: validacion_movimiento_negras, retorno: false");
-			return False;
-	else:
-		print("[DEV] EJECUTANDO: validacion_movimiento_negras, retorno: false");
-		return False;
-
-def controlador_convertir_fichas(estado_juego, x1:int, x2:int, y1:int, y2:int, modo:str, color:int)-> None:
-	""" ... """
-
-	if		(modo == "cde"):
-		while (y1 != y2):
-			estado_juego[x1][y1] = color;
-			y1 = (y1 + 1);
-	
-	elif	(modo == "ciz"):
-		while (y1 != y2):
-			estado_juego[x1][y1] = color;
-			y1=y1-1
-
-	elif	(modo == "arc"):
-		while	(x1 != x2):
-			estado_juego[x1][y1] = color;
-			x1 = (x1 - 1);
-
-	elif	(modo == "abc"):
-		while	(x1 != x2):
-			estado_juego[x1][y1] = color;
-			x1 = (x1 + 1);
-
-	elif	(modo == "arde"):
-		while	(x1 != x2):
-			estado_juego[x1][y1] = color;
-			x1 = (x1 - 1);
-			y1 = (y1 + 1);
-	
-	elif	(modo == "ariz"):
-		while	(x1 != x2):
-			estado_juego[x1][y1] = color;
-			x1 = (x1 - 1);
-			y1 = (y1 - 1);
-
-	elif	(modo == "abde"):
-		while	(x1 != x2):
-			estado_juego[x1][y1] = color;
-			x1 = (x1 + 1);
-			y1 = (y1 + 1);
-
-	elif	(modo == "abiz"):
-		while	(x1 != x2):
-			estado_juego[x1][y1] = color;
-			x1 = (x1 + 1);
-			y1 = (y1 -1);
-
-def controlador_vacias(estado_juego, coordenadas) -> bool:
-	""" ... """
-	print("[DEV] EJECUTANDO: controlador_vacias.....");
-
-	if (estado_juego[coordenadas[0]][coordenadas[1]] == 0):
-		print("[DEV] EJECUTANDO: controlador_vacias, retorno: true");
+	def Tablero_completo(self,matriz:list) -> bool:
+		"""Evalua si ya se ha llenado todo el tablero de juego"""
+		for i in range(6):
+			for j in range(6):
+				if matriz[i][j]==0:
+					return False
 		return True
-	else:
-		print("[DEV] EJECUTANDO: controlador_vacias, retorno: false");
-		return False
 
-def controlador_adyacentes(estado_juego, coordenadas) -> bool:
-	""" ... """
+	def Contar_fichas(self,color:int) -> int:
+		"""Cuenta el numero de fichas del color que se le pase como parametro en un estado especifico del juego"""
+		fichas=0
+		if color==1:
+			for i in range(6):
+				for j in range(6):
+					if self.tablero[i][j]==1:
+						fichas=fichas+1
+		if color==2:
+			for i in range(6):
+				for j in range(6):
+					if self.tablero[i][j]==2:
+						fichas=fichas+1
+		return fichas
 
-	print("[DEV] EJECUTANDO: controlador_adyacentes.....");
-
-
-	x:int = coordenadas[0];
-	y:int = coordenadas[1];
-
-	# Comprobaciones.
-	if	(x < 5) and (x > 0) and (y < 5) and (y > 0):
-		if		(estado_juego[x + 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		elif	(estado_juego[x - 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		elif	(estado_juego[x][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-			
-		elif	(estado_juego[x + 1][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		elif	(estado_juego[x - 1][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		
-		elif	(estado_juego[x + 1][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		elif	(estado_juego[x - 1][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: falso");
-			return False;
-	
-	if (x == 5) and (y > 0) and (y < 5):
-		if		(estado_juego[x - 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		
-		elif	(estado_juego[x - 1][ y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x - 1][ y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		
-		elif	(estado_juego[x][ y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x][ y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-			return False;
-	
-	if	(x == 0) and (y > 0) and (y < 5):
-		if		(estado_juego[x + 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x + 1][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		elif	(estado_juego[x + 1][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-			return False;
-	
-	if (y == 5) and (x < 5) and (x > 0):
-		if		(estado_juego[x + 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x - 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-		
-		elif	(estado_juego[x - 1][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x + 1][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-			return False;
-	
-	if	(y == 0) and (x < 5) and (x > 0):
-		if		(estado_juego[x + 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x - 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x + 1][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x - 1][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-			return False; 	
-
-	if	(x == 0) and (y == 0):
-		if		(estado_juego[x + 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x + 1][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-			return False;
-	
-	if (x == 0) and (y == 5):
-		if 	(estado_juego[x + 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x + 1][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-			return False;
-
-	if (x == 5) and (y == 0):
-		if		(estado_juego[x - 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x - 1][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif	(estado_juego[x][y + 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-			return False;
-
-	if (x == 5) and (y == 5):
-		if (estado_juego[x - 1][y] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif (estado_juego[x - 1][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		elif (estado_juego[x][y - 1] != 0):
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: true");
-			return True;
-
-		else:
-			print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-			return False;
-	
-	else:
-		print("[DEV] EJECUTANDO: controlador_adyacentes, retorno: false");
-		return False;
+	def Resetear_tablero(self):
+		for i in range(6):
+			for j in range(6):
+				self.tablero[i][j]=0
+		self.tablero[2][2] = 1;
+		self.tablero[3][3] = 1;
+		self.tablero[3][2] = 2;
+		self.tablero[2][3] = 2;

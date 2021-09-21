@@ -2,14 +2,13 @@
 import typing
 import sys
 import pygame
-import numpy as np
-# import time
+import time
+import random as rd
 from pygame.locals import *
 
 # Local imports
+from IA import*
 from GAME import *
-from CLASE import *
-from IA import *
 
 # -- Definición de variables globales. --
 # Configuración para la ventana.
@@ -35,7 +34,13 @@ COLOR_TEXTO:tuple = (24, 27, 28);
 
 # Definición del estado inicial del juego.
 # Tablero vacio.
-ESTADO_JUEGO=np.zeros((6,6))
+ESTADO_JUEGO= [
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0, 0]];
 
 # [0] : Celda vacia.
 # [1] : Celda Blanca.
@@ -70,17 +75,14 @@ def controlador_tablero(ventana, ficha_blanca, ficha_negra) -> None:
 			# Construcción de los estados del tablero.
 			# CASO 1 : celda vacia.
 			if ESTADO_JUEGO[fila][columna] == 0:
-				# pygame.draw.polygon(ventana, COLOR_VACIO, coordenadas_poligono, 1);
 				pass
 
 			# CASO 2 : celda con ficha blanca.
 			elif ESTADO_JUEGO[fila][columna] == 1:
-				# pygame.draw.polygon(ventana, COLOR_VACIO, coordenadas_poligono, 1);
 				ventana.blit(ficha_blanca, ((POSICION_X + 7), (POSICION_Y + 9)));
 
 			# CASO 3 : celda con ficha negra.
 			elif ESTADO_JUEGO[fila][columna] == 2:
-				# pygame.draw.polygon(ventana, COLOR_VACIO, coordenadas_poligono, 1);
 				ventana.blit(ficha_negra, ((POSICION_X + 7), (POSICION_Y + 9)));
 
 			# Iteración del posicionamiento en columnas.
@@ -173,7 +175,7 @@ def controlador_interfaz(juego) -> None:
 	pygame.display.set_icon(icono);
 
 	# Cargando los recursos del juego. 
-	fondo_juego = controlador_assets("board.jpg");
+	fondo_juego = controlador_assets("background-facil.jpg");
 	ficha_blanca = controlador_assets("ficha_j2.png", True);
 	ficha_negra = controlador_assets("ficha_j1.png", True);
 	fuente_juego = pygame.font.Font('./src/assets/Roboto-Light.ttf', 20);
@@ -182,17 +184,24 @@ def controlador_interfaz(juego) -> None:
 	FPS = pygame.time.Clock();
 	FPS.tick(30);
 
-	# Recordatorio: Esto aparentemente es temporal. atte: Nico.
-	# Variables para el manejo de turnos.
-	TURNO_BLANCA:bool = False;
+	# Variables para el manejo del juego
+
+	TURNO_BLANCA:bool = False; 
 	TURNO_NEGRA:bool = True;
-	resultado=None
+	FIN_DE_JUEGO:bool=False;	#Indica si se completo el tablero o ya no hay mas jugadas posibles
+	BLANCAS:int=0;				#nº de fichas blancas en el tablero
+	NEGRAS:int=0;				#nº de fichas negras en el tablero
+	GANADOR:str=None; 			#Indica que jugador tiene mas fichas de su color en el tablero
+	PERMISO:list=False; 		#Indica si ya se eligio la dificultad, si eso ocurre entonces el jugador puede empezar
+	TIEMPO:float=0; 			#El tiempo que tarda el minimax o el alfabeta en devolver una respuesta
+	LISTA:list=[]; 				#Lista de jugadas que realiza el minimax o el alfabeta, sirve para ver los nodos que explora
+	PISTA=None; 				#Coordenada que puede jugar el usuario
 
 	# Ciclo para correr el juego.
+	
 	while True:
 		# Posicionando los recursos en la ventana.
 		ventana.blit(fondo_juego, (0,0));
-
 		# Control de eventos.
 		for evento in pygame.event.get():
 			# Evento: salir del juego.
@@ -200,66 +209,168 @@ def controlador_interfaz(juego) -> None:
 				sys.exit(0);
 			
 			if evento.type == MOUSEBUTTONDOWN:
+
 				posicion_mouse: list = pygame.mouse.get_pos();
-				
-				# Gestionador de las coordenadas del tablero.
-				coordenadas_tablero = controlador_coordenadas(posicion_mouse);
-	
-				# Implementando la jugabilidad.	
-				if juego.Identificador_fin_juego(ESTADO_JUEGO,2):
-					if juego.Esta_vacia(coordenadas_tablero) and juego.Es_adyacente(coordenadas_tablero) and juego.Permite_salto_negra(coordenadas_tablero):
-						ESTADO_JUEGO[coordenadas_tablero[0]][coordenadas_tablero[1]]=2
-						estado=copy.deepcopy(ESTADO_JUEGO)
-						if juego.Identificador_fin_juego(ESTADO_JUEGO,1):
-							resultado= minimax(juego,estado,0,-1)
-							coordenada_blanca=resultado[1]
-							juego.Jugar(coordenada_blanca,1)
+
+				#ELIGIENDO DIFICULTAD
+				if 55<=posicion_mouse[0]<=105 and 85<=posicion_mouse[1]<=100 and not PERMISO:
+					juego.dificultad=2 #USA MINIMAX
+					PERMISO=True
+
+				elif 115<=posicion_mouse[0]<=170 and 85<=posicion_mouse[1]<=100 and not PERMISO:
+					fondo_juego = controlador_assets("background-medio.jpg");
+					juego.dificultad=2 #USA ALFABETA
+					PERMISO=True
+					
+				elif 175<=posicion_mouse[0]<=225 and 85<=posicion_mouse[1]<=100 and not PERMISO:
+					fondo_juego = controlador_assets("background-dificil.jpg");
+					juego.dificultad=6  #USA ALFABETA
+					PERMISO=True
+
+				#REINICIANDO
+				if 240<=posicion_mouse[0]<=390 and 75<=posicion_mouse[1]<=105:
+					PERMISO=False
+					juego.Resetear_tablero()
+					LISTA=[]
+					TIEMPO=0
+					TURNO_NEGRA=True
+					TURNO_BLANCA=False
+
+				#PISTAS
+				if 245 <= posicion_mouse[0] <= 395 and 40<=posicion_mouse[1]<=70:
+					pistas= juego.Generador_Jugadas_validas(2)
+					limite= len(pistas)
+					if len(pistas)!=0:
+						pista = rd.randint(0,limite-1)
+						#traducir
+						pistas[pista][0]=pistas[pista][0]+1
+						if pistas[pista][1]==0:
+							pistas[pista][1]="A"
+						if pistas[pista][1]==1:
+							pistas[pista][1]="B"
+						if pistas[pista][1]==2:
+							pistas[pista][1]="C"
+						if pistas[pista][1]==3:
+							pistas[pista][1]="D"
+						if pistas[pista][1]==4:
+							pistas[pista][1]="E"
+						if pistas[pista][1]==5:
+							pistas[pista][1]="F"
+						PISTA=pistas[pista]
+					
+
+					
+				#si ya eligio la dificultad la variable PERMISO se vuelve true
+				if PERMISO:
+					coordenadas_tablero = controlador_coordenadas(posicion_mouse);
+					#Si el turno es de las negras y la jugada es valida
+					if TURNO_NEGRA and juego.Jugar(coordenadas_tablero,2):
+						TURNO_NEGRA=False
+						TURNO_BLANCA=True
+
+						#generamos una copia del tablero actual para usar en minimax o alfabeta
+						copia = copy.deepcopy(juego.tablero)
+						
+							#Medimos el tiempo del algortimo
+						inicio=time.time()
+						jugada_blanca=alfabeta(juego,copia,0,1,-1000,1000,[],LISTA)
+						fin=time.time()
+						TIEMPO=round(fin-inicio,3)
+
+						#Es posible que retorne directamente la utilidad, por lo que hay que sercirarse de que
+						#retorne 2 elementos, la utilidad y la jugada
+						if len(jugada_blanca)!=1:
+
+							#Cuando no puede jugar la blanca retorna None
+							if jugada_blanca[1] is not None:
+								
+								#Si es el turno de las blancas y la jugada es valida
+								if TURNO_BLANCA and juego.Jugar(jugada_blanca[1],1):
+									TURNO_NEGRA=True
+									TURNO_BLANCA=False
+							
+							#Si la blanca no puede jugar, significa que el juego termino
+							else:
+								FIN_DE_JUEGO=True
+								TURNO_NEGRA=False
+								TURNO_BLANCA=False
+						
+						#Si el minimax o el alfabeta retornan solo la utilidad, es porque se lleno el tablero
 						else:
-							print("[JUEGO TERMINADO]")
-				else:
-					print("[JUEGO TERMINADO]")
-
+							FIN_DE_JUEGO=True
+							TURNO_NEGRA=False
+							TURNO_BLANCA=False
 					
-
-				"""
-				if (controlador_tablero_lleno(ESTADO_JUEGO)) and (coordenadas_tablero[0] != -1) and (coordenadas_tablero[1] != -1):
-					lista_turnos:list[bool] = controlador_turnos(ESTADO_JUEGO, coordenadas_tablero, TURNO_BLANCA, TURNO_NEGRA);
-
-					# Turnos de cada ficha.
-					TURNO_BLANCA = lista_turnos[0];
-					TURNO_NEGRA = lista_turnos[1];
-
-					# Renderizado del texto
-					if (TURNO_NEGRA):
-						texto_turnos = pygame.font.Font.render(fuente_juego, "Turno: Ficha negra", True, (0, 0, 255));
-
-					elif (TURNO_BLANCA):
-						texto_turnos = pygame.font.Font.render(fuente_juego, "Turno: Ficha blanca", True, (0, 0, 255));
+					#Si la jugada de las negras no es valida pudo ser por error del jugador o porque ya no hay 
+					#casillas disponibles
 					else:
-						texto_turnos = pygame.font.Font.render(fuente_juego, "No quedan más turnos", True, (0, 0, 255));
 
-					print(f"[DEV] posicion mouse: {posicion_mouse}")
-					print(f"[DEV] coordenadas grid: {coordenadas_tablero}")
+						#Si no hay casillas disponibles para las negras termina el juego
+						if not juego.Puede_jugar(2):
+							FIN_DE_JUEGO=True
+							TURNO_NEGRA=False
+							TURNO_BLANCA=False
 
-				elif (coordenadas_tablero[0] == -1) or (coordenadas_tablero[1] == -1):
-					print("[DEV] movimiento fuera del tablero!");
-					print(f"[DEV] posicion mouse: {posicion_mouse}")
-					print(f"[DEV] coordenadas grid: {coordenadas_tablero}")
-				
-				else:
-					texto_turnos = pygame.font.Font.render(fuente_juego, "No quedan más turnos", True, (0, 0, 255));
-				"""
-					
-				
+						#si el jugador se equivoco se le permite volver a intentarlo
+						else:
+							pass
+		
+		#En cada ciclo del juego se revisa si no se ha completado el tablero
+		if juego.Tablero_completo(juego.tablero) or not juego.Puede_jugar(2):
+			FIN_DE_JUEGO=True
+			TURNO_NEGRA=False
+			TURNO_BLANCA=False
+
+		#Contamos cuantas fichas de cada color hay en el tablero
+		BLANCAS=juego.Contar_fichas(1)
+		NEGRAS=juego.Contar_fichas(2)
+
+		#En cada ciclo se evalua el ganador, pero solo se muestra si termina el juego
+		if BLANCAS<NEGRAS:
+			GANADOR="NEGRAS"
+		elif BLANCAS > NEGRAS:
+			GANADOR="BLANCAS"
+		else:
+			GANADOR= "EMPRATE"
+		
 		# Renderizado de texto: Turno de las fichas.
 		if (TURNO_NEGRA):
 			texto_turnos = pygame.font.Font.render(fuente_juego, "Turno: Ficha negra", True, COLOR_TEXTO);
+			ventana.blit(texto_turnos, dest=(220, 668));
 	
 		elif (TURNO_BLANCA):
 			texto_turnos = pygame.font.Font.render(fuente_juego, "Turno: Ficha blanca", True, COLOR_TEXTO);
+			ventana.blit(texto_turnos, dest=(220, 668));
+		
+		elif (FIN_DE_JUEGO):
+			texto_turnos = pygame.font.Font.render(fuente_juego, "GANADOR: "+str(GANADOR), True, COLOR_TEXTO);
+			ventana.blit(texto_turnos, dest=(220,668));#300,120
 
-		ventana.blit(texto_turnos, dest=(220, 668));
+		#MOSTRAR TIEMPO DE EJECUCION DE LA IA
+		tiempo_ejecucion=pygame.font.Font.render(fuente_juego, str(TIEMPO), True, COLOR_TEXTO)
+		ventana.blit(tiempo_ejecucion, dest=(500,80))
+		
+		#MOSTRAR NODOS EXPLORADOS POR LA IA
+		nodos=pygame.font.Font.render(fuente_juego, str(len(LISTA)), True, COLOR_TEXTO)
+		ventana.blit(nodos, dest=(500,45))
+		
+		#MOSTRAR EL NUMERO DE FICHAS BLANCAS EN JUEGO
+		blancas=pygame.font.Font.render(fuente_juego, str(BLANCAS), True, COLOR_TEXTO)
+		ventana.blit(blancas, dest=(83,121))
+		
+		#MOSTRAR EL NUMERO DE FICHAS NEGRAS EN JUEGO
+		negras=pygame.font.Font.render(fuente_juego, str(NEGRAS), True, COLOR_TEXTO)
+		ventana.blit(negras, dest=(180,121))
 
+		#INDICAR QUE ELIGA LA DIFICULTAD AL USUARIO
+		if not PERMISO:
+			info=pygame.font.Font.render(fuente_juego, "Seleccione la dificultad", True, COLOR_TEXTO)
+			ventana.blit(info, dest=(300,120))
+		
+		if PISTA is not None and PERMISO:
+			info=pygame.font.Font.render(fuente_juego, str(PISTA), True, COLOR_TEXTO)
+			ventana.blit(info, dest=(390,120))
+		
 		# Definición del tablero.
 		controlador_tablero(ventana, ficha_blanca, ficha_negra);
 
