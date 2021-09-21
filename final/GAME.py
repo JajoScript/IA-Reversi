@@ -719,12 +719,12 @@ class Juego():
 			return False;
 			
 
-	def comprobar_finalizacion(self, coordenadas:Tuple[int,int]) -> bool:
+	def comprobar_finalizacion(self) -> bool: # , coordenadas:Tuple[int,int]
 		"""..."""
 
 		#	Traemos el estado del juego.
-		fila:int = coordenadas[0];
-		columna:int = coordenadas[1];
+		# fila:int = coordenadas[0];
+		# columna:int = coordenadas[1];
 		tablero = self.GET_estado_juego();
 
 		#	CASO 1: No quedan casillas vacias.
@@ -735,10 +735,10 @@ class Juego():
 
 		#	CASO 2: No quedan más movimientos para la ficha blanca.
 		#	CASO 3: No quedan más movimientos para la ficha negra.
-		elif (self.validacion_jugadas((fila, columna))):
-			print("[DEV][GAME][comprobar_finalizacion] quedan movimientos.")
-			self.SET_terminado(False);
-			return False;
+		# elif (self.validacion_jugadas((fila, columna))):
+		# 	print("[DEV][GAME][comprobar_finalizacion] quedan movimientos.")
+		# 	self.SET_terminado(False);
+		# 	return False;
 
 		else:
 			#	Se retorna False dado que, el juego NO termino.
@@ -766,7 +766,7 @@ class Juego():
 		self.SET_jugador(color_ficha);
 
 		#	Comprobar si el juego termino.
-		esta_terminado:bool = self.comprobar_finalizacion((fila, columna));
+		esta_terminado:bool = self.comprobar_finalizacion();
 		esta_vacia:bool = self.comprobar_vacia((fila, columna));
 
 		#	Comprobaciones: Determinar si se puede o no jugar...
@@ -807,7 +807,7 @@ class Juego():
 						self.SET_turnos(nuevos_turnos);
 
 						#	Re-Comprobación: Verificar si el juego termino. Para actualizar la GUI.
-						esta_terminado = self.comprobar_finalizacion((fila, columna));
+						esta_terminado = self.comprobar_finalizacion();
 						if (esta_terminado):
 							print("[DEV][GAME][POST-GAME] el juego termino.");
 						elif not (esta_terminado):

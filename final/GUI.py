@@ -1,6 +1,7 @@
 #	-- Dependencias.
 #	Dependencias externas.
 import pygame;
+import copy
 import os;
 import sys;
 import webbrowser;
@@ -231,8 +232,13 @@ class Interfaz():
 		#	Determinando funcionalidad dependiendo de la dificultad.
 		if (dificultad == "FACIL"):
 			print("[DEV][GUI][EVENTO] Se pulso el boton FACIL");
+			print("[DEV][GUI][EVENTO] Se definio una nueva profundidad: 2");
 			#	Reincio del tablero.
 			self.activar_boton_nuevo_juego();
+
+			#	Traemos a la IA para definir su profundidad.
+			inteligencia = self.GET_inteligencia();
+			inteligencia.SET_profundidad(nueva_profundidad=2);
 
 			#	Definiendo los estados.
 			estado_dificultad = [True, False, False]
@@ -242,9 +248,14 @@ class Interfaz():
 
 		elif (dificultad == "MEDIO"):
 			print("[DEV][GUI][EVENTO] Se pulso el boton MEDIO");
+			print("[DEV][GUI][EVENTO] Se definio una nueva profundidad: 4");
 			#	Reincio del tablero.
 			self.activar_boton_nuevo_juego();
 
+			#	Traemos a la IA para definir su profundidad.
+			inteligencia = self.GET_inteligencia();
+			inteligencia.SET_profundidad(nueva_profundidad=4);
+			
 			#	Definiendo los estados.
 			estado_dificultad = [False, True, False]
 			self.SET_estado_dificultad(estado_dificultad);
@@ -253,9 +264,14 @@ class Interfaz():
 
 		elif (dificultad == "DIFICIL"):
 			print("[DEV][GUI][EVENTO] Se pulso el boton DIFICIL");
+			print("[DEV][GUI][EVENTO] Se definio una nueva profundidad: 6");
 			#	Reincio del tablero.
 			self.activar_boton_nuevo_juego();
 			
+			#	Traemos a la IA para definir su profundidad.
+			inteligencia = self.GET_inteligencia();
+			inteligencia.SET_profundidad(nueva_profundidad=6);
+
 			#	Definiendo los estados.
 			estado_dificultad = [False, False, True]
 			self.SET_estado_dificultad(estado_dificultad);
@@ -374,6 +390,7 @@ class Interfaz():
 
 		#	Definimos como propiedad la partida.
 		self.SET_partida(partida);
+		self.SET_inteligencia(inteligencia);
 		partida.SET_inteligencia(inteligencia);
 
 		#	Definimos un estado inicial para la dificultad.
@@ -452,10 +469,22 @@ class Interfaz():
 						turnos:List[bool] = self.GET_turnos();
 						partida.SET_turnos(turnos);
 
-						if(turnos[0]):
-							print("[DEV][GUI] Jugada de ficha: blanca.");
-							partida.iniciar_jugabilidad((indice_x, indice_y), color_ficha=1);
-							#EN TEORIA AQUI SE APLICABA LA IA
+						#	Cambio de turnos: comienza a jugar la IA.
+						if (turnos[0]):
+							print("[DEV][GUI] Jugada de ficha: blanca real.");
+							print("[DEV] Comienza a jugar la IA...");
+							print(f"[DEV] Profundidad: {inteligencia.GET_profundidad()}");
+
+							#	Calcular las mejores jugadas.
+							tablero = partida.GET_estado_juego();
+							copia = copy.deepcopy(tablero);
+
+							valor = inteligencia.minimax(partida, copia, profundidad=0, etapa=1, secuencia=[], secuencias=[]);
+							print(f"[VALOR] {valor}")
+
+							#	Juega con las coordenadas.
+							partida.iniciar_jugabilidad(valor[1], color_ficha=1);
+
 							
 						elif (turnos[1]):
 							print("[DEV][GUI] Jugada de ficha: negra.");
@@ -475,9 +504,18 @@ class Interfaz():
 							#	Cambiazo de los turnos.
 							nuevos_turnos:List[bool] = partida.GET_turnos();
 							self.SET_turnos(nuevos_turnos);
-				
+							print(f"NT : {nuevos_turnos}")
+
+						
 
 	#	Getters & Setters.
+	#		INTELIGENCIA ARTIFICIAL.
+	def GET_inteligencia(self) -> Any:
+		return self.INTELIGENCIA;
+
+	def SET_inteligencia(self, nueva_ia) -> None:
+		self.INTELIGENCIA = nueva_ia
+
 	#		TERMINADO.
 	def GET_terminado(self) -> bool:
 		return self.TERMINADO;
