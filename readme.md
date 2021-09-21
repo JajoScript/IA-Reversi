@@ -2,7 +2,7 @@
 
 ---
 ## Resumen e inicio del programa.
-En esta serie de pasos usted podra descargar y correr nuestro juego Reversi.
+En esta serie de pasos usted podrá descargar y correr nuestro juego Reversi.
 
 PASO 0: Clonar el repositorio (SSH o HTTPS):
 ```bash
@@ -36,17 +36,21 @@ PASO 5: Ejecutar el paquete **src**.
 ```
 
 ---
-## Introducción y buenas practicas
+## Introducción y buenas prácticas
 
 ---
-## Buenas practicas
-Se definio como un estandar progamar utilizando la tabulación para la indentación, con un tamaño de 3 espacios.
+## Buenas prácticas
+Se definió como un estándar programar utilizando la tabulación para la indentación, con un tamaño de 3 espacios.
 Por otro lado, se usa el paradigma de programación orientada a objeto en el desarrollo de todo el trabajo.
 
 ---
 ## Dependencias
-Para funcionalidad y control de tipado es necesaria una versión de python 
+Para funcionalidad y control de tipado es necesaria una versión de Python.
 
+*	pygame==2.0.1
+*	numpy==1.21.2
+*	mypy==0.910
+*	lxml==4.6.3
 *  Pyton ^3.6.x
 
 ---
@@ -63,7 +67,7 @@ Generación de un entorno de desarrollo con python.
 	$mypy --config-file .mypy.ini src/ --html-report src/__test__/
 ```
 
-## Aquitectura del directorio.
+## Arquitectura del directorio.
 En el siguiente apartado se describen los distintos archivos presentes en el proyecto.
 
 ```py
@@ -78,7 +82,7 @@ En el siguiente apartado se describen los distintos archivos presentes en el pro
 
 ```py
 	GUI.py
-	# Archivo destinado a la implementación de la interfaz grafica del usuario.
+	# Archivo destinado a la implementación de la interfaz gráfica del usuario.
 ```
 
 ```py
