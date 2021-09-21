@@ -472,13 +472,12 @@ class Interfaz():
 						#	Cambio de turnos: comienza a jugar la IA.
 						if (turnos[0]):
 							print("[DEV][GUI] Jugada de ficha: blanca real.");
-							print("[DEV] Comienza a jugar la IA...");
+							print("[DEV] Comienza a jugar la IA...------------------------------------------");
 							print(f"[DEV] Profundidad: {inteligencia.GET_profundidad()}");
 
 							#	Calcular las mejores jugadas.
 							tablero = partida.GET_estado_juego();
 							copia = copy.deepcopy(tablero);
-
 							valor = inteligencia.minimax(partida, copia, profundidad=0, etapa=1, secuencia=[], secuencias=[]);
 							print(f"[VALOR] {valor}")
 
